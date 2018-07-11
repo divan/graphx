@@ -1,0 +1,30 @@
+package layout
+
+import (
+	"math"
+	"testing"
+)
+
+func TestDistance(t *testing.T) {
+	var tests = []struct {
+		from, to *Object
+		expected float64
+	}{
+		{
+			from:     NewObject(0, 0, 0),
+			to:       NewObject(10, 10, 10),
+			expected: math.Sqrt(300),
+		},
+		{
+			from:     NewObject(2, 3, 1),
+			to:       NewObject(8, -5, 0),
+			expected: math.Sqrt(101),
+		},
+	}
+	for _, test := range tests {
+		got := distance(test.from, test.to)
+		if got != test.expected {
+			t.Fatalf("Expected %.3f, but got %.3f", test.expected, got)
+		}
+	}
+}
