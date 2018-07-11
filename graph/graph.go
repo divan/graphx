@@ -1,6 +1,6 @@
 package graph
 
-// Graph represents graph data and implements gonum's Graph interface.
+// Graph represents graph data.
 type Graph struct {
 	nodes []Node
 	links []*Link
