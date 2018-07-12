@@ -16,7 +16,7 @@ import (
 // d{x,y,z} = v * dt
 //
 // returns total movement amount
-func (l *Layout3D) integrate() float64 {
+func (l *Layout) integrate() float64 {
 	const dt = 3           // integration step
 	var tx, ty, tz float64 // total movement
 	for k := range l.objects {
