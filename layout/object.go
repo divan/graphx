@@ -10,28 +10,28 @@ import (
 type Object struct {
 	ID string
 
-	X, Y, Z int
-	Mass    int
+	X, Y, Z float64
+	Mass    float64
 
 	velocity *Velocity
 	force    *ForceVector
 }
 
 // NewObject creates new object with given coordinates.
-func NewObject(x, y, z int) *Object {
+func NewObject(x, y, z float64) *Object {
 	return &Object{
 		X:    x,
 		Y:    y,
 		Z:    z,
 		Mass: 1,
 
-		velocity: ZeroVelocity,
-		force:    ZeroForce,
+		velocity: ZeroVelocity(),
+		force:    ZeroForce(),
 	}
 }
 
 // NewObjectID creates new object with given coordinates and ID.
-func NewObjectID(x, y, z int, id string) *Object {
+func NewObjectID(x, y, z float64, id string) *Object {
 	ret := NewObject(x, y, z)
 	ret.ID = id
 	return ret
@@ -39,29 +39,37 @@ func NewObjectID(x, y, z int, id string) *Object {
 
 // String implements Stringer interface for Object.
 func (o *Object) String() string {
-	return fmt.Sprintf("[%d, %d, %d, m: %d]", o.X, o.Y, o.Z, o.Mass)
+	return fmt.Sprintf("[%.2f, %.2f, %.2f, m: %.2f]", o.X, o.Y, o.Z, o.Mass)
 }
 
 // Move updates object positions by calculating movement with current force and
 // velocity in a time interval dt.
 func (o *Object) Move(dt int) (dx, dy, dz float64) {
-	o.updateVelocity(dt)
-	dx, dy, dz = o.velocity.Distance(dt)
-	o.X += int(dx)
-	o.Y += int(dy)
-	o.Z += int(dz)
-	return
+	o.updateVelocity(dt, o.force)
+	v := o.velocity
+	t := float64(dt)
+	o.X += t * v.X
+	o.Y += t * v.Y
+	o.Z += t * v.Z
+	return o.X, o.Y, o.Z
 }
 
 // updateVelocity updates object velocity with a current force applied.
-func (o *Object) updateVelocity(dt int) {
-	if o.force == ZeroForce {
+func (o *Object) updateVelocity(dt int, force *ForceVector) {
+	if o.force == ZeroForce() {
 		return
 	}
 
-	o.velocity.X += float64(dt) * o.force.DX / float64(o.Mass)
-	o.velocity.Y += float64(dt) * o.force.DY / float64(o.Mass)
-	o.velocity.Z += float64(dt) * o.force.DZ / float64(o.Mass)
+	o.velocity.X += float64(dt) * force.DX / float64(o.Mass)
+	o.velocity.Y += float64(dt) * force.DY / float64(o.Mass)
+	o.velocity.Z += float64(dt) * force.DZ / float64(o.Mass)
+}
+
+// SetPosition sets object positon to the given coordines.
+func (o *Object) SetPosition(x, y, z float64) {
+	o.X = x
+	o.Y = y
+	o.Z = z
 }
 
 // distance calculated distance betweein two objects in 3D space.
@@ -80,12 +88,11 @@ type Velocity struct {
 }
 
 // ZeroVelocity is, well, zero value for velocity.
-var ZeroVelocity = &Velocity{}
+func ZeroVelocity() *Velocity {
+	return &Velocity{}
+}
 
-// Distance calculates distance for the given time interval dt for three dimentions.
-func (v *Velocity) Distance(dt int) (dx, dy, dz float64) {
-	dx = float64(dt) * v.X
-	dy = float64(dt) * v.Y
-	dz = float64(dt) * v.Z
-	return
+// String implements Stringer interface for velocity.
+func (v *Velocity) String() string {
+	return fmt.Sprintf("V(%.1f, %.1f, %.1f)", v.X, v.Y, v.Z)
 }

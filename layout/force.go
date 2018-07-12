@@ -17,7 +17,7 @@ type Force interface {
 }
 
 // ZeroForce is a zero force.
-var ZeroForce = &ForceVector{}
+func ZeroForce() *ForceVector { return &ForceVector{} }
 
 // String implements Stringer interface for ForceVector.
 func (f ForceVector) String() string {
@@ -26,10 +26,6 @@ func (f ForceVector) String() string {
 
 // Add adds new force to f.
 func (f *ForceVector) Add(f1 *ForceVector) *ForceVector {
-	if f == nil {
-		f = &ForceVector{}
-	}
-
 	f.DX += f1.DX
 	f.DY += f1.DY
 	f.DZ += f1.DZ
@@ -38,10 +34,6 @@ func (f *ForceVector) Add(f1 *ForceVector) *ForceVector {
 
 // Sub substracts new force from f.
 func (f *ForceVector) Sub(f1 *ForceVector) *ForceVector {
-	if f == nil {
-		f = &ForceVector{}
-	}
-
 	f.DX -= f1.DX
 	f.DY -= f1.DY
 	f.DZ -= f1.DZ
@@ -49,8 +41,8 @@ func (f *ForceVector) Sub(f1 *ForceVector) *ForceVector {
 }
 
 // Negative returns the same force vector, but in opposite direction.
-func (f *ForceVector) Negative() ForceVector {
-	return ForceVector{
+func (f *ForceVector) Negative() *ForceVector {
+	return &ForceVector{
 		DX: -f.DX,
 		DY: -f.DY,
 		DZ: -f.DZ,

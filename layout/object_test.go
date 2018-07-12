@@ -28,3 +28,43 @@ func TestDistance(t *testing.T) {
 		}
 	}
 }
+
+func TestObjectVelocity(t *testing.T) {
+	o := NewObject(1, 1, 1)
+	o.velocity = &Velocity{10, 10, 10}
+
+	o.updateVelocity(1, ZeroForce())
+	expected := &Velocity{10, 10, 10}
+	if o.velocity.String() != expected.String() {
+		t.Fatalf("Expected %v, but got %v", expected, o.velocity)
+	}
+
+	o.updateVelocity(1, &ForceVector{-5, -5, -5})
+	expected = &Velocity{5, 5, 5}
+	if o.velocity.String() != expected.String() {
+		t.Fatalf("Expected %v, but got %v", expected, o.velocity)
+	}
+
+	o.updateVelocity(1, &ForceVector{-5, -5, -5})
+	expected = &Velocity{0, 0, 0}
+	if o.velocity.String() != expected.String() {
+		t.Fatalf("Expected %v, but got %v", expected, o.velocity)
+	}
+
+	o.velocity = &Velocity{10, 10, 10}
+	o.updateVelocity(2, &ForceVector{-5, -5, -5})
+	expected = &Velocity{0, 0, 0}
+	if o.velocity.String() != expected.String() {
+		t.Fatalf("Expected %v, but got %v", expected, o.velocity)
+	}
+}
+
+func TestObjectMove(t *testing.T) {
+	o := NewObject(100, 100, 100)
+	o.velocity = ZeroVelocity() // &Velocity{10, 10, 10}
+	o.force = &ForceVector{1, 1, 1}
+
+	o.Move(3)
+	t.Log(o.velocity)
+	t.Log(o)
+}

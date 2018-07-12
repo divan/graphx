@@ -24,7 +24,7 @@ func TestInsert(t *testing.T) {
 	center = o.root.Center()
 	expected := NewObject(5, 5, 5)
 	expected.Mass = 20
-	if *center != *expected {
+	if center.String() != expected.String() {
 		t.Fatalf("Expected center to be %v, but got %v", expected, center)
 	}
 }
@@ -75,7 +75,7 @@ func TestLeafInsert(t *testing.T) {
 	center = node.Center()
 	expected := NewObject(0, 0, 0) // zero coords
 	expected.Mass = 2
-	if *center != *expected {
+	if center.String() != expected.String() {
 		t.Fatalf("Expected %v, but got %v", expected, center)
 	}
 }

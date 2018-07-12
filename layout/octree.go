@@ -137,8 +137,8 @@ func (n *node) updateMassCenter() {
 
 func massCenter(points []*Object) *Object {
 	var (
-		xm, ym, zm int
-		totalMass  int
+		xm, ym, zm float64
+		totalMass  float64
 	)
 
 	for _, p := range points {
@@ -203,7 +203,7 @@ func (n *node) String() string {
 			out += "N"
 		}
 	}
-	return fmt.Sprintf("Node: (%d, %d, %d): [%s]", n.Center().X, n.Center().Y, n.Center().Z, out)
+	return fmt.Sprintf("Node: (%.1f, %.1f, %.1f): [%s]", n.Center().X, n.Center().Y, n.Center().Z, out)
 }
 
 func (l *leaf) String() string {
@@ -211,7 +211,7 @@ func (l *leaf) String() string {
 		return "."
 	}
 	c := l.Center()
-	return fmt.Sprintf("L %s: [%d, %d, %d]", c.ID, c.X, c.Y, c.Z)
+	return fmt.Sprintf("L %s: [%.1f, %.1f, %.1f]", c.ID, c.X, c.Y, c.Z)
 }
 
 // CalcForce calculates force between two nodes using Barne-Hut method.
@@ -227,7 +227,7 @@ func (o *Octree) calcForce(from *leaf, to octant) *ForceVector {
 	if from == nil {
 		panic(errors.New("calcForce from nil"))
 	}
-	ret := &ForceVector{}
+	ret := ZeroForce()
 	if toLeaf, ok := to.(*leaf); ok {
 		if toLeaf == nil || toLeaf.Center() == nil {
 			return ret

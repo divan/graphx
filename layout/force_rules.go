@@ -28,15 +28,8 @@ var ForEachLink = func(
 		f := force.Apply(from, to)
 
 		// Update force vectors
-		from.force.Add(f)
-		to.force.Sub(f)
-
-		// Update debug information
-		/*
-			name := force.Name()
-			debugInfo.Append(link.From, name, *f)
-			debugInfo.Append(link.To, name, f.Negative())
-		*/
+		objects[idFrom].force.Add(f)
+		objects[idTo].force.Sub(f)
 	}
 }
 
@@ -56,13 +49,7 @@ var BarneHutMethod = func(
 			break
 		}
 
-		// Update force vectors
-		f1 := objects[node.ID].force
-		objects[node.ID].force = f1.Add(f)
-
-		// Update debug information
-		//name := force.Name()
-		//debugInfo.Append(node.Idx, name, *f)
+		objects[node.ID].force.Add(f)
 	}
 }
 
@@ -74,12 +61,41 @@ var ForEachNode = func(
 	for id, node := range objects {
 		f := force.Apply(node, nil)
 
-		// Update force vectors
-		ff := objects[id].force
-		objects[id].force = ff.Add(f)
+		objects[id].force.Add(f)
+	}
+}
 
-		// Update debug information
-		//name := force.Name()
-		//debugInfo.Append(i, name, *f)
+// EachOnEach applies every node force to every other node in the graph.
+// It's slow, and added just to compare results with more optimized versions.
+var EachOnEach = func(
+	force Force,
+	objects map[string]*Object,
+	links []*graph.Link) {
+	var newObjects = make(map[string]*Object)
+	for id, node := range objects {
+		newObjects[id] = NewObject(0, 0, 0)
+		newObjects[id].force.DX = node.force.DX
+		newObjects[id].force.DY = node.force.DY
+		newObjects[id].force.DZ = node.force.DZ
+	}
+
+	for id1 := range objects {
+		for id2 := range objects {
+			if id1 == id2 {
+				continue
+			}
+
+			f := force.Apply(objects[id1], objects[id2])
+
+			// Update force vectors
+			newObjects[id1].force.Add(f)
+			newObjects[id2].force.Sub(f)
+		}
+	}
+
+	for id, node := range newObjects {
+		objects[id].force.DX = node.force.DX
+		objects[id].force.DY = node.force.DY
+		objects[id].force.DZ = node.force.DZ
 	}
 }

@@ -1,6 +1,8 @@
 package layout
 
-import "math"
+import (
+	"math"
+)
 
 // GravityForce represents gravity force,
 // calculated by Coloumb's law. Implements Force interface.
@@ -24,8 +26,7 @@ func (g *GravityForce) Apply(from, to *Object) *ForceVector {
 	yy := float64(to.Y - from.Y)
 	zz := float64(to.Z - from.Z)
 
-	// distance calculates distance between points.
-	r := int32(math.Sqrt(float64(xx*xx) + float64(yy*yy) + float64(zz*zz)))
+	r := float64(math.Sqrt(float64(xx*xx) + float64(yy*yy) + float64(zz*zz)))
 	if r == 0 {
 		r = 10
 	}
