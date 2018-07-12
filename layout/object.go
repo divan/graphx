@@ -55,7 +55,7 @@ func (o *Object) Move(dt int) (dx, dy, dz float64) {
 
 // updateVelocity updates object velocity with a current force applied.
 func (o *Object) updateVelocity(dt int) {
-	if o.force == nil {
+	if o.force == ZeroForce {
 		return
 	}
 

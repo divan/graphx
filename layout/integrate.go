@@ -21,18 +21,16 @@ func (l *Layout3D) integrate() float64 {
 	var tx, ty, tz float64 // total movement
 	for k := range l.objects {
 
-		/*
-			dvx, dvy, dvz := body.Velocity.X, body.Velocity.Y, body.Velocity.Z
-				v := math.Sqrt(dvx*dvx + dvy*dvy + dvz*dvz)
-
-				if v > 1 {
-					body.Velocity.X = dvx / v
-					body.Velocity.Y = dvy / v
-					body.Velocity.Z = dvz / v
-				}
-		*/
-
 		body := l.objects[k]
+		dvx, dvy, dvz := body.velocity.X, body.velocity.Y, body.velocity.Z
+		v := math.Sqrt(dvx*dvx + dvy*dvy + dvz*dvz)
+
+		if v > 1 {
+			body.velocity.X = dvx / v
+			body.velocity.Y = dvy / v
+			body.velocity.Z = dvz / v
+		}
+
 		dx, dy, dz := body.Move(dt)
 
 		// calculate total displacement

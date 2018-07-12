@@ -67,11 +67,11 @@ func (n *NgraphBinary) ExportLayout(l layout.Layout) error {
 
 	iw := newInt32LEWriter(fd)
 
-	nodes := l.Nodes()
-	for i := range nodes {
-		iw.Write(int32(nodes[i].X))
-		iw.Write(int32(nodes[i].Y))
-		iw.Write(int32(nodes[i].Z))
+	nodes := l.Positions()
+	for k := range nodes {
+		iw.Write(int32(nodes[k].X))
+		iw.Write(int32(nodes[k].Y))
+		iw.Write(int32(nodes[k].Z))
 		if iw.err != nil {
 			return err
 		}

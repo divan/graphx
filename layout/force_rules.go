@@ -18,9 +18,7 @@ type ForceRule func(
 var ForEachLink = func(
 	force Force,
 	objects map[string]*Object,
-	links []*graph.Link,
-	vectors map[int]*ForceVector,
-	debugInfo ForcesDebugData) {
+	links []*graph.Link) {
 	for _, link := range links {
 		idFrom := link.From()
 		idTo := link.To()
@@ -55,7 +53,7 @@ var BarneHutMethod = func(
 		f, err := otree.CalcForce(i)
 		if err != nil {
 			fmt.Println("[ERROR] Force calc failed:", i, err)
-			continue
+			break
 		}
 
 		// Update force vectors
@@ -72,9 +70,7 @@ var BarneHutMethod = func(
 var ForEachNode = func(
 	force Force,
 	objects map[string]*Object,
-	links []*graph.Link,
-	vectors map[int]*ForceVector,
-	debugInfo ForcesDebugData) {
+	links []*graph.Link) {
 	for id, node := range objects {
 		f := force.Apply(node, nil)
 
