@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/divan/graphx/graph"
-	"gopkg.in/cheggaaa/pb.v1"
 )
 
 // stableThreshold determines the movement diff needed to
@@ -112,12 +111,9 @@ func (l *Layout) Calculate() {
 // CalculateN run positions' recalculations exactly N times.
 func (l *Layout) CalculateN(n int) {
 	fmt.Println("Simulation started...")
-	bar := pb.StartNew(n)
 	for i := 0; i < n; i++ {
 		l.UpdatePositions()
-		bar.Increment()
 	}
-	bar.FinishPrint("Simulation finished")
 
 }
 
