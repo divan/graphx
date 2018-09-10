@@ -61,11 +61,13 @@ func (d *NetGenerator) Generate() *graph.Graph {
 	g := graph.NewGraph()
 
 	// generate hosts
+	nodeIPs := map[int]string{}
 	gen := NewIPGenerator(d.startIP)
 	for i := 0; i < d.hosts; i++ {
 		ip := gen.NextAddress()
 		node := NewNode(ip)
 		g.AddNode(node)
+		nodeIPs[i] = ip
 	}
 
 	// generate links
@@ -73,7 +75,10 @@ func (d *NetGenerator) Generate() *graph.Graph {
 		for j := 0; j < d.conns(); j++ {
 			idx, err := nextIdx(g, i, 0, d.hosts)
 			if err == nil {
-				addLink(g, i, idx)
+				from, to := nodeIPs[i], nodeIPs[idx]
+				if !g.LinkExists(from, to) {
+					g.AddLink(nodeIPs[i], nodeIPs[idx])
+				}
 			}
 		}
 	}
