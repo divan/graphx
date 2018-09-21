@@ -28,6 +28,30 @@ func (g *Graph) LinkExists(from, to string) bool {
 	return false
 }
 
+// LinkIndex returns link index by its source and target.
+func (g *Graph) LinkIndex(from, to string) (int, error) {
+	for i, link := range g.links {
+		if link.from == from && link.to == to ||
+			link.to == from && link.from == to {
+			return i, nil
+		}
+	}
+
+	return 0, fmt.Errorf("link %s->%s not found", from, to)
+}
+
+// LinkByIndices returns link index by its source and target indices.
+func (g *Graph) LinkByIndices(from, to int) (int, error) {
+	for i, link := range g.links {
+		if link.fromIdx == from && link.toIdx == to ||
+			link.toIdx == from && link.fromIdx == to {
+			return i, nil
+		}
+	}
+
+	return 0, fmt.Errorf("link %d->%d not found", from, to)
+}
+
 // NodeByID returns node index by its ID.
 func (g *Graph) NodeByID(id string) (int, error) {
 	for i, node := range g.nodes {

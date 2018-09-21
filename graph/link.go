@@ -4,6 +4,9 @@ package graph
 type Link struct {
 	from string
 	to   string
+
+	fromIdx int
+	toIdx   int
 }
 
 // NewLink constructs new Link object.
@@ -22,6 +25,17 @@ func (g *Graph) AddLink(from, to string) error {
 	// TODO: add node if ID is unexistent
 
 	link := NewLink(from, to)
+
+	var err error
+	link.fromIdx, err = g.NodeByID(from)
+	if err != nil {
+		return err
+	}
+	link.toIdx, err = g.NodeByID(to)
+	if err != nil {
+		return err
+	}
+
 	g.links = append(g.links, link)
 	return nil
 }
@@ -29,8 +43,14 @@ func (g *Graph) AddLink(from, to string) error {
 // From returns link's source ID.
 func (l *Link) From() string { return l.from }
 
-// From returns link's target ID.
+// To returns link's target ID.
 func (l *Link) To() string { return l.to }
+
+// FromIdx returns link's source index.
+func (l *Link) FromIdx() int { return l.fromIdx }
+
+// ToIdx returns link's target index.
+func (l *Link) ToIdx() int { return l.toIdx }
 
 // Rewire allows explicitly change edge.
 func (l *Link) Rewire(from, to string) {
