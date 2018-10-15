@@ -18,18 +18,20 @@ const stableThreshold = 2.001
 type Layout struct {
 	g *graph.Graph
 
-	objects map[string]*Object // node ID as a key
-	links   []*graph.Link
-	forces  []Force
+	objects   map[string]*Object // node ID as a key
+	positions []*Object
+	links     []*graph.Link
+	forces    []Force
 }
 
 // New initializes 3D layout with objects data and set of forces.
 func New(g *graph.Graph, forces ...Force) *Layout {
 	l := &Layout{
-		g:       g,
-		objects: make(map[string]*Object),
-		links:   g.Links(),
-		forces:  forces,
+		g:         g,
+		objects:   make(map[string]*Object),
+		positions: make([]*Object, 0, len(g.Nodes())),
+		links:     g.Links(),
+		forces:    forces,
 	}
 
 	l.initPositions()
@@ -60,15 +62,16 @@ func (l *Layout) AddNode(node graph.Node) error {
 // TODO: add link/remove link
 
 func (l *Layout) addObject(node graph.Node) {
-	lastIdx := len(l.objects) // use last item index for calculating pseudo-random positions
+	lastIdx := len(l.positions) // use last item index for calculating pseudo-random positions
 
 	// TODO: handle weight
 
 	x, y, z := randomPosition(lastIdx)
 
-	o := NewObjectID(x, y, z, node.ID())
+	obj := NewObjectID(x, y, z, node.ID())
 
-	l.objects[node.ID()] = o
+	l.positions = append(l.positions, obj)
+	l.objects[node.ID()] = obj
 }
 
 // randomPosition generates x,y,z coordinates pseudo-randomly spread around the
@@ -110,7 +113,6 @@ func (l *Layout) Calculate() {
 
 // CalculateN run positions' recalculations exactly N times.
 func (l *Layout) CalculateN(n int) {
-	fmt.Println("Simulation started...")
 	for i := 0; i < n; i++ {
 		l.UpdatePositions()
 	}
@@ -131,8 +133,8 @@ func (l *Layout) UpdatePositions() float64 {
 }
 
 func (l *Layout) resetForces() {
-	for k := range l.objects {
-		l.objects[k].force = ZeroForce()
+	for i := range l.positions {
+		l.positions[i].force = ZeroForce()
 	}
 }
 
@@ -141,9 +143,16 @@ func (l *Layout) AddForce(f Force) {
 	l.forces = append(l.forces, f)
 }
 
-// Positions returns nodes information.
+// Positions returns nodes information as a map with ID key.
+// TODO(divan): rename it to something else after fixing legacy usage.
 func (l *Layout) Positions() map[string]*Object {
 	return l.objects
+}
+
+// Positions returns nodes information as a slice, where index order is equal to the
+// original graph nodes order.
+func (l *Layout) PositionsSlice() []*Object {
+	return l.positions
 }
 
 // Links returns graph data links.
