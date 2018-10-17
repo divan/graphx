@@ -4,7 +4,9 @@ import "math"
 
 // Point represents a single point in 3D space.
 type Point struct {
-	X, Y, Z float64
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
+	Z float64 `json:"z"`
 }
 
 // NewPoint creates a new points for the given coordinates.
