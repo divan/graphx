@@ -23,7 +23,7 @@ func TestSpring(t *testing.T) {
 			checkDistance(t, left, right, 0, 10)
 		}
 		left, right := l.objects["0"], l.objects["1"]
-		d := distance(left, right)
+		d := distance(left.Point, right.Point)
 		if math.Abs(d-restLength) > 5.0 {
 			t.Logf("Expect diff to be less than %v, got %v", 5.0, math.Abs(d-restLength))
 		}
@@ -43,7 +43,7 @@ func TestSpring(t *testing.T) {
 			checkDistanceX(t, left, right, 0, 10)
 		}
 		left, right := l.objects["0"], l.objects["1"]
-		d := distance(left, right)
+		d := distance(left.Point, right.Point)
 		if math.Abs(d-restLength) > 5.0 {
 			t.Logf("Expect diff to be less than %v, got %v", 5.0, math.Abs(d-restLength))
 		}

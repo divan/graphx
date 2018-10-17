@@ -2,28 +2,24 @@ package layout
 
 import (
 	"fmt"
-	"math"
 )
 
 // Object represents an object in 3D space with some ID information
 // attached to it.
 type Object struct {
 	ID string
-
-	X, Y, Z float64
-	Mass    float64
+	*Point
+	Mass float64
 
 	velocity *Velocity
 	force    *ForceVector
 }
 
-// NewObject creates new object with given coordinates.
-func NewObject(x, y, z float64) *Object {
+// NewObject creates new object with given point.
+func NewObject(point *Point) *Object {
 	return &Object{
-		X:    x,
-		Y:    y,
-		Z:    z,
-		Mass: 1,
+		Point: point,
+		Mass:  1,
 
 		velocity: ZeroVelocity(),
 		force:    ZeroForce(),
@@ -31,8 +27,8 @@ func NewObject(x, y, z float64) *Object {
 }
 
 // NewObjectID creates new object with given coordinates and ID.
-func NewObjectID(x, y, z float64, id string) *Object {
-	ret := NewObject(x, y, z)
+func NewObjectID(p *Point, id string) *Object {
+	ret := NewObject(p)
 	ret.ID = id
 	return ret
 }
@@ -63,21 +59,6 @@ func (o *Object) updateVelocity(dt int, force *ForceVector) {
 	o.velocity.X += float64(dt) * force.DX / float64(o.Mass)
 	o.velocity.Y += float64(dt) * force.DY / float64(o.Mass)
 	o.velocity.Z += float64(dt) * force.DZ / float64(o.Mass)
-}
-
-// SetPosition sets object positon to the given coordines.
-func (o *Object) SetPosition(x, y, z float64) {
-	o.X = x
-	o.Y = y
-	o.Z = z
-}
-
-// distance calculated distance betweein two objects in 3D space.
-func distance(from, to *Object) float64 {
-	dx := float64(to.X - from.X)
-	dy := float64(to.Y - from.Y)
-	dz := float64(to.Z - from.Z)
-	return math.Sqrt(dx*dx + dy*dy + dz*dz)
 }
 
 // Velocity represents velocity vector.

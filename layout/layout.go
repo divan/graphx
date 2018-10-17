@@ -19,7 +19,7 @@ type Layout struct {
 	g *graph.Graph
 
 	objects   map[string]*Object // node ID as a key
-	positions []*Object
+	positions []*Point
 	links     []*graph.Link
 	forces    []Force
 }
@@ -29,7 +29,7 @@ func New(g *graph.Graph, forces ...Force) *Layout {
 	l := &Layout{
 		g:         g,
 		objects:   make(map[string]*Object),
-		positions: make([]*Object, 0, len(g.Nodes())),
+		positions: make([]*Point, 0, len(g.Nodes())),
 		links:     g.Links(),
 		forces:    forces,
 	}
@@ -67,10 +67,10 @@ func (l *Layout) addObject(node graph.Node) {
 	// TODO: handle weight
 
 	x, y, z := randomPosition(lastIdx)
+	point := NewPoint(x, y, z)
+	obj := NewObjectID(point, node.ID())
 
-	obj := NewObjectID(x, y, z, node.ID())
-
-	l.positions = append(l.positions, obj)
+	l.positions = append(l.positions, point)
 	l.objects[node.ID()] = obj
 }
 
@@ -133,8 +133,8 @@ func (l *Layout) UpdatePositions() float64 {
 }
 
 func (l *Layout) resetForces() {
-	for i := range l.positions {
-		l.positions[i].force = ZeroForce()
+	for i := range l.objects {
+		l.objects[i].force = ZeroForce()
 	}
 }
 
@@ -151,7 +151,7 @@ func (l *Layout) Positions() map[string]*Object {
 
 // Positions returns nodes information as a slice, where index order is equal to the
 // original graph nodes order.
-func (l *Layout) PositionsSlice() []*Object {
+func (l *Layout) PositionsSlice() []*Point {
 	return l.positions
 }
 

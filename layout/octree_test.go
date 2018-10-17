@@ -4,7 +4,7 @@ import "testing"
 
 func TestInsert(t *testing.T) {
 	o := NewOctree(NewGravityForce(-10, BarneHutMethod))
-	p1 := NewObject(1, 1, 1)
+	p1 := NewObject(NewPoint(1, 1, 1))
 	p1.Mass = 10
 	o.Insert(p1)
 
@@ -17,12 +17,12 @@ func TestInsert(t *testing.T) {
 		t.Fatalf("Expected center to be %v, but got %v", p1, center)
 	}
 
-	p2 := NewObject(9, 9, 9)
+	p2 := NewObject(NewPoint(9, 9, 9))
 	p2.Mass = 10
 	o.Insert(p2)
 
 	center = o.root.Center()
-	expected := NewObject(5, 5, 5)
+	expected := NewObject(NewPoint(5, 5, 5))
 	expected.Mass = 20
 	if center.String() != expected.String() {
 		t.Fatalf("Expected center to be %v, but got %v", expected, center)
@@ -37,22 +37,22 @@ func TestFindOctantIdx(t *testing.T) {
 	}{
 		{
 			name: "bottom back right",
-			p:    NewObject(9, 9, 9),
+			p:    NewObject(NewPoint(9, 9, 9)),
 			idx:  7,
 		},
 		{
 			name: "top front left",
-			p:    NewObject(1, 1, 1),
+			p:    NewObject(NewPoint(1, 1, 1)),
 			idx:  0,
 		},
 		{
 			name: "bottom front right",
-			p:    NewObject(9, 2, 9),
+			p:    NewObject(NewPoint(9, 2, 9)),
 			idx:  5,
 		},
 	}
 
-	o := newLeaf(NewObject(5, 5, 5))
+	o := newLeaf(NewObject(NewPoint(5, 5, 5)))
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			idx := findOctantIdx(o, test.p)
@@ -64,8 +64,8 @@ func TestFindOctantIdx(t *testing.T) {
 }
 
 func TestLeafInsert(t *testing.T) {
-	p1 := NewObject(1, 1, 1)
-	p2 := NewObject(-1, -1, -1)
+	p1 := NewObject(NewPoint(1, 1, 1))
+	p2 := NewObject(NewPoint(-1, -1, -1))
 	l := newLeaf(p1)
 	center := l.Center()
 	if center != p1 {
@@ -73,7 +73,7 @@ func TestLeafInsert(t *testing.T) {
 	}
 	node := l.Insert(p2)
 	center = node.Center()
-	expected := NewObject(0, 0, 0) // zero coords
+	expected := NewObject(NewPoint(0, 0, 0)) // zero coords
 	expected.Mass = 2
 	if center.String() != expected.String() {
 		t.Fatalf("Expected %v, but got %v", expected, center)
@@ -83,11 +83,11 @@ func TestLeafInsert(t *testing.T) {
 func TestBugCase1(t *testing.T) {
 	o := NewOctree(NewGravityForce(-10, BarneHutMethod))
 	objects := []*Object{
-		NewObjectID(-2, 4, 1, "1"),
-		NewObjectID(-6, 4, -1, "2"),
-		NewObjectID(-1, -13, 3, "3"),
-		NewObjectID(14, 14, 5, "4"),
-		NewObjectID(-19, -5, 9, "5"),
+		NewObjectID(NewPoint(-2, 4, 1), "1"),
+		NewObjectID(NewPoint(-6, 4, -1), "2"),
+		NewObjectID(NewPoint(-1, -13, 3), "3"),
+		NewObjectID(NewPoint(14, 14, 5), "4"),
+		NewObjectID(NewPoint(-19, -5, 9), "5"),
 	}
 	for i := 0; i < 5; i++ {
 		objects[i].Mass = 2

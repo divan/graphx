@@ -151,7 +151,8 @@ func massCenter(points []*Object) *Object {
 		zm += p.Z * p.Mass
 	}
 
-	ret := NewObject(xm/totalMass, ym/totalMass, zm/totalMass)
+	point := NewPoint(xm/totalMass, ym/totalMass, zm/totalMass)
+	ret := NewObject(point)
 	ret.Mass = totalMass
 	return ret
 }
@@ -237,7 +238,7 @@ func (o *Octree) calcForce(from *leaf, to octant) *ForceVector {
 		// calculate ratio
 		width := toNode.width()
 
-		r := distance(from.Center(), to.Center())
+		r := distance(from.Center().Point, to.Center().Point)
 
 		if float64(width)/float64(r) < theta {
 			return o.force.Apply(from.Center(), to.Center())
