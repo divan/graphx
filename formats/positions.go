@@ -41,5 +41,32 @@ func ToPositionsJSONFile(positions []*layout.Point, file string) error {
 	if err != nil {
 		return fmt.Errorf("create positions json: %v", err)
 	}
+	defer fd.Close()
 	return ToPositionsJSON(positions, fd)
+}
+
+// ToPositionsNGraph writes points positions to the io.Writer in the NGraph binary format.
+func ToPositionsNGraph(positions []*layout.Point, w io.Writer) error {
+	iw := newInt32LEWriter(w)
+
+	for k := range positions {
+		iw.Write(int32(positions[k].X))
+		iw.Write(int32(positions[k].Y))
+		iw.Write(int32(positions[k].Z))
+		if iw.err != nil {
+			return fmt.Errorf("write Int32LE: %v", iw.err)
+		}
+	}
+
+	return nil
+}
+
+// ToPositionsNGraphFile writes points positions to the file in the NGraph binary format.
+func ToPositionsNGraphFile(positions []*layout.Point, file string) error {
+	fd, err := os.Create(file)
+	if err != nil {
+		return fmt.Errorf("create positions ngraph binary: %v", err)
+	}
+	defer fd.Close()
+	return ToPositionsNGraph(positions, fd)
 }

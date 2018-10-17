@@ -59,25 +59,8 @@ func (n *NgraphBinary) ExportGraph(g *graph.Graph) error {
 // Implements export.LayoutExporter interface.
 func (n *NgraphBinary) ExportLayout(l layout.Layout) error {
 	file := filepath.Join(n.Dir, "positions.bin")
-	fd, err := os.Create(file)
-	if err != nil {
-		return err
-	}
-	defer fd.Close()
 
-	iw := newInt32LEWriter(fd)
-
-	nodes := l.Positions()
-	for k := range nodes {
-		iw.Write(int32(nodes[k].X))
-		iw.Write(int32(nodes[k].Y))
-		iw.Write(int32(nodes[k].Z))
-		if iw.err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return ToPositionsNGraphFile(l.PositionsSlice(), file)
 }
 
 // writeLinksBin writes links information into `links.bin` file in the
