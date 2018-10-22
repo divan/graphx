@@ -38,5 +38,5 @@ func distance(from, to *Point) float64 {
 
 // String implements Stringer for Point.
 func (p Point) String() string {
-	return fmt.Sprintf("p(%.3f, %.3f, %.3f)", p.X, p.Y, p.Z)
+	return fmt.Sprintf("(%+3.3f,%+3.3f,%+3.3f)", p.X, p.Y, p.Z)
 }
