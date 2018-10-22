@@ -20,9 +20,9 @@ func NewDragForce(coeff float64, rule ForceRule) Force {
 // we don't need two nodes.
 func (g *DragForce) Apply(o, _ *Object) *ForceVector {
 	return &ForceVector{
-		DX: -g.Coeff * o.force.DX,
-		DY: -g.Coeff * o.force.DY,
-		DZ: -g.Coeff * o.force.DZ,
+		DX: -g.Coeff * o.velocity.X,
+		DY: -g.Coeff * o.velocity.Y,
+		DZ: -g.Coeff * o.velocity.Z,
 	}
 }
 
