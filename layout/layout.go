@@ -40,12 +40,9 @@ func NewWithForces(g *graph.Graph, forces ...Force) *Layout {
 }
 
 // New creates a new layout from the given config.
-func New(g *graph.Graph, conf Config) *Layout {
-	repelling := NewGravityForce(conf.Repelling, BarneHutMethod)
-	springs := NewSpringForce(conf.SpringStiffness, conf.SpringLen, ForEachLink)
-	drag := NewDragForce(conf.DragCoeff, ForEachNode)
-
-	return NewWithForces(g, repelling, springs, drag)
+func New(g *graph.Graph, config Config) *Layout {
+	forces := forcesFromConfig(config)
+	return NewWithForces(g, forces...)
 }
 
 // initPositions inits layout graph from the original graph data.

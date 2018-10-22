@@ -15,3 +15,11 @@ var DefaultConfig = Config{
 	SpringLen:       5.0,
 	DragCoeff:       0.8,
 }
+
+// ForcesFromConfig constructs default forces from the given config.
+func forcesFromConfig(config Config) []Force {
+	repelling := NewGravityForce(config.Repelling, BarneHutMethod)
+	springs := NewSpringForce(config.SpringStiffness, config.SpringLen, ForEachLink)
+	drag := NewDragForce(config.DragCoeff, ForEachNode)
+	return []Force{repelling, springs, drag}
+}
