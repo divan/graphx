@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"sync"
 	"time"
 
 	"github.com/divan/graphx/graph"
@@ -21,7 +22,18 @@ type Layout struct {
 	objects   map[string]*Object // node ID as a key
 	positions []*Point
 	links     []*graph.Link
-	forces    []Force
+
+	confMu sync.RWMutex
+	config Config
+	forces []Force
+}
+
+// New creates a new layout from the given config.
+func New(g *graph.Graph, config Config) *Layout {
+	forces := forcesFromConfig(config)
+	l := NewWithForces(g, forces...)
+	l.config = config
+	return l
 }
 
 // NewWithForces initializes layout with data and custom set of forces.
@@ -37,12 +49,6 @@ func NewWithForces(g *graph.Graph, forces ...Force) *Layout {
 	l.initPositions()
 
 	return l
-}
-
-// New creates a new layout from the given config.
-func New(g *graph.Graph, config Config) *Layout {
-	forces := forcesFromConfig(config)
-	return NewWithForces(g, forces...)
 }
 
 // initPositions inits layout graph from the original graph data.
@@ -130,7 +136,10 @@ func (l *Layout) CalculateN(n int) {
 func (l *Layout) UpdatePositions() float64 {
 	l.resetForces()
 
-	for _, force := range l.forces {
+	l.confMu.RLock()
+	forces := l.forces
+	l.confMu.RUnlock()
+	for _, force := range forces {
 		apply := force.Rule()
 		apply(force, l.objects, l.links)
 	}
@@ -145,7 +154,10 @@ func (l *Layout) resetForces() {
 }
 
 // AddForce adds force to the internal list of forces.
+// FIXME: this breaks sync between config and forces
 func (l *Layout) AddForce(f Force) {
+	l.confMu.Lock()
+	defer l.confMu.Unlock()
 	l.forces = append(l.forces, f)
 }
 
@@ -164,4 +176,19 @@ func (l *Layout) PositionsSlice() []*Point {
 // Links returns graph data links.
 func (l *Layout) Links() []*graph.Link {
 	return l.links
+}
+
+// Config returns current config.
+func (l *Layout) Config() Config {
+	l.confMu.RLock()
+	defer l.confMu.RUnlock()
+	return l.config
+}
+
+// SetConfig updates current config and forces.
+func (l *Layout) SetConfig(c Config) {
+	l.confMu.Lock()
+	l.config = c
+	l.forces = forcesFromConfig(c)
+	l.confMu.Unlock()
 }
