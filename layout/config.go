@@ -11,14 +11,14 @@ type Config struct {
 // DefaultConfig sets reasonable values for small and medium graphs.
 var DefaultConfig = Config{
 	Repelling:       -10.0,
-	SpringStiffness: 0.02,
-	SpringLen:       5.0,
-	DragCoeff:       0.8,
+	SpringStiffness: 0.05,
+	SpringLen:       10.0,
+	DragCoeff:       0.02,
 }
 
 // ForcesFromConfig constructs default forces from the given config.
 func forcesFromConfig(config Config) []Force {
-	repelling := NewGravityForce(config.Repelling, BarneHutMethod)
+	repelling := NewGravityForce(config.Repelling, EachOnEach) // FIXME: replace with BarneHut when it's fixed
 	springs := NewSpringForce(config.SpringStiffness, config.SpringLen, ForEachLink)
 	drag := NewDragForce(config.DragCoeff, ForEachNode)
 	return []Force{repelling, springs, drag}
