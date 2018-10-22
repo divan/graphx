@@ -61,6 +61,13 @@ func (o *Object) updateVelocity(dt int, force *ForceVector) {
 	o.velocity.Z += float64(dt) * force.DZ / float64(o.Mass)
 }
 
+func (o Object) Force() *ForceVector {
+	return o.force
+}
+func (o Object) Velocity() *Velocity {
+	return o.velocity
+}
+
 // Velocity represents velocity vector.
 type Velocity struct {
 	X float64
