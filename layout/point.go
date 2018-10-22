@@ -1,6 +1,9 @@
 package layout
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 // Point represents a single point in 3D space.
 type Point struct {
@@ -31,4 +34,9 @@ func distance(from, to *Point) float64 {
 	dy := float64(to.Y - from.Y)
 	dz := float64(to.Z - from.Z)
 	return math.Sqrt(dx*dx + dy*dy + dz*dz)
+}
+
+// String implements Stringer for Point.
+func (p Point) String() string {
+	return fmt.Sprintf("p(%.3f, %.3f, %.3f)", p.X, p.Y, p.Z)
 }
