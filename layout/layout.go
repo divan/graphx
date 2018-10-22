@@ -24,8 +24,8 @@ type Layout struct {
 	forces    []Force
 }
 
-// New initializes 3D layout with objects data and set of forces.
-func New(g *graph.Graph, forces ...Force) *Layout {
+// NewWithForces initializes layout with data and custom set of forces.
+func NewWithForces(g *graph.Graph, forces ...Force) *Layout {
 	l := &Layout{
 		g:         g,
 		objects:   make(map[string]*Object),
@@ -37,6 +37,15 @@ func New(g *graph.Graph, forces ...Force) *Layout {
 	l.initPositions()
 
 	return l
+}
+
+// New creates a new layout from the given config.
+func New(g *graph.Graph, conf Config) *Layout {
+	repelling := NewGravityForce(conf.Repelling, BarneHutMethod)
+	springs := NewSpringForce(conf.SpringStiffness, conf.SpringLen, ForEachLink)
+	drag := NewDragForce(conf.DragCoeff, ForEachNode)
+
+	return NewWithForces(g, repelling, springs, drag)
 }
 
 // initPositions inits layout graph from the original graph data.

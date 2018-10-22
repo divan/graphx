@@ -24,7 +24,7 @@ func NewAuto(g *graph.Graph) *Layout {
 	springs := NewSpringForce(0.02, optimalEdge, ForEachLink)
 	drag := NewDragForce(0.8, ForEachNode)
 
-	return New(g, repelling, springs, drag)
+	return NewWithForces(g, repelling, springs, drag)
 }
 
 func estimateOptimalEdge(width float64, links int) float64 {

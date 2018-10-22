@@ -11,7 +11,7 @@ func TestLayout(t *testing.T) {
 	graph := basic.NewLineGenerator(2).Generate()
 	repelling := NewGravityForce(-1.0, BarneHutMethod)
 	//springs := NewSpringForce(0.01, 12.0, ForEachLink)
-	l := New(graph, repelling)
+	l := NewWithForces(graph, repelling)
 	l.objects["0"].SetPosition(0, 0, 0)
 	l.objects["1"].SetPosition(100, 100, 100)
 
@@ -26,7 +26,7 @@ func TestLayoutAdd(t *testing.T) {
 	g.AddNode(graph.NewBasicNode("node 1"))
 	g.AddLink("node 0", "node 1")
 	repelling := NewGravityForce(-1.0, ForEachNode)
-	l := New(g, repelling)
+	l := NewWithForces(g, repelling)
 
 	if len(l.objects) != 2 {
 		t.Fatalf("objects map expected to be of %d length, but is of %d", 2, len(l.objects))

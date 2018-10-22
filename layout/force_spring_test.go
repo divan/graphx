@@ -12,7 +12,7 @@ func TestSpring(t *testing.T) {
 		restLength := 17.32
 		graph := basic.NewLineGenerator(2).Generate()
 		spring := NewSpringForce(0.01, restLength-2, ForEachLink) // -2 = let it oscillate a bit
-		l := New(graph, spring)
+		l := NewWithForces(graph, spring)
 
 		l.objects["0"].SetPosition(0, 0, 0)
 		l.objects["1"].SetPosition(10, 10, 10)
@@ -32,7 +32,7 @@ func TestSpring(t *testing.T) {
 		restLength := 10.0
 		graph := basic.NewLineGenerator(2).Generate()
 		spring := NewSpringForce(0.02, restLength, ForEachLink)
-		l := New(graph, spring)
+		l := NewWithForces(graph, spring)
 
 		l.objects["0"].SetPosition(0, 0, 0)
 		l.objects["1"].SetPosition(11, 0, 0)

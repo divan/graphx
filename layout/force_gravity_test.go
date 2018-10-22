@@ -10,7 +10,7 @@ func TestGravity(t *testing.T) {
 	t.Run("2_bodies_eachoneach", func(t *testing.T) {
 		graph := basic.NewLineGenerator(2).Generate()
 		gravity := NewGravityForce(-1.0, EachOnEach)
-		l := New(graph, gravity)
+		l := NewWithForces(graph, gravity)
 
 		l.objects["0"].SetPosition(0, 0, 0)
 		l.objects["1"].SetPosition(100, 100, 100)
@@ -23,7 +23,7 @@ func TestGravity(t *testing.T) {
 	t.Run("2_bodies_barnehut", func(t *testing.T) {
 		graph := basic.NewLineGenerator(2).Generate()
 		gravity := NewGravityForce(-1.0, BarneHutMethod)
-		l := New(graph, gravity)
+		l := NewWithForces(graph, gravity)
 
 		l.objects["0"].SetPosition(0, 0, 0)
 		l.objects["1"].SetPosition(100, 100, 100)
@@ -36,7 +36,7 @@ func TestGravity(t *testing.T) {
 	t.Run("2_bodies_barne_hut_bug", func(t *testing.T) {
 		graph := basic.NewLineGenerator(2).Generate()
 		gravity := NewGravityForce(-1.0, BarneHutMethod)
-		l := New(graph, gravity)
+		l := NewWithForces(graph, gravity)
 
 		l.objects["0"].SetPosition(-541.38, -541.38, -541.38)
 		l.objects["1"].SetPosition(641.38, 641.38, 641.38)
@@ -48,8 +48,8 @@ func TestGravity(t *testing.T) {
 		graph := basic.NewLineGenerator(2).Generate()
 		gravity := NewGravityForce(-1.0, EachOnEach)
 		drag := NewDragForce(1, ForEachNode)
-		l := New(graph, gravity)
-		l_drag := New(graph, gravity, drag)
+		l := NewWithForces(graph, gravity)
+		l_drag := NewWithForces(graph, gravity, drag)
 
 		l.objects["0"].SetPosition(0, 0, 0)
 		l.objects["1"].SetPosition(10, 10, 10)

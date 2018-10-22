@@ -17,10 +17,9 @@ import (
 //
 // returns total movement amount
 func (l *Layout) integrate() float64 {
-	const dt = 3           // integration step
+	const dt = 2           // integration step
 	var tx, ty, tz float64 // total movement
-	for k := range l.objects {
-		body := l.objects[k]
+	for _, body := range l.objects {
 		dvx, dvy, dvz := body.velocity.X, body.velocity.Y, body.velocity.Z
 		v := math.Sqrt(dvx*dvx + dvy*dvy + dvz*dvz)
 
