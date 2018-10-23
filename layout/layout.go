@@ -128,7 +128,6 @@ func (l *Layout) CalculateN(n int) {
 	for i := 0; i < n; i++ {
 		l.UpdatePositions()
 	}
-
 }
 
 // UpdatePositions recalculates nodes' positions, applying all the forces.
@@ -191,4 +190,24 @@ func (l *Layout) SetConfig(c Config) {
 	l.config = c
 	l.forces = forcesFromConfig(c)
 	l.confMu.Unlock()
+}
+
+// SetPositions overwrites objects positions and recalculates layout internal stuff
+// to be in sync with new positions.
+// Positions slice should be the same size and order as Nodes.
+func (l *Layout) SetPositions(positions []*Point) {
+	l.positions = positions
+
+	// recalculate objects with new positions
+	l.resetObjects()
+	for i, node := range l.g.Nodes() {
+		id := node.ID()
+		point := l.positions[i]
+		obj := NewObjectID(point, node.ID())
+		l.objects[id] = obj
+	}
+}
+
+func (l *Layout) resetObjects() {
+	l.objects = make(map[string]*Object)
 }
