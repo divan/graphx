@@ -58,7 +58,7 @@ func (d *D3JSON) ExportGraph(g *graph.Graph) error {
 	}
 
 	data.Nodes = g.Nodes()
-	data.Links = make([]*link, len(g.Links()))
+	data.Links = make([]*link, g.NumLinks())
 	for i, l := range g.Links() {
 		data.Links[i] = &link{
 			Source: l.From(),
