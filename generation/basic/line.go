@@ -23,9 +23,11 @@ func (l *LineGenerator) Generate() *graph.Graph {
 	for i := 0; i < l.nodes; i++ {
 		addNode(g, i)
 
-		if i != l.nodes-1 {
-			addLink(g, i, i+1)
+		if i == 0 {
+			continue
 		}
+
+		addLink(g, i-1, i)
 	}
 
 	return g
