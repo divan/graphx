@@ -64,7 +64,7 @@ func (g *Graph) NodeByID(id string) (int, error) {
 
 // NodeIDByIdx returns node ID by its index.
 func (g *Graph) NodeIDByIdx(idx int) (string, error) {
-	if idx < 0 || idx > len(g.nodes)-1 {
+	if idx < 0 || idx > g.NumNodes()-1 {
 		return "", fmt.Errorf("node for index %d not found", idx)
 	}
 

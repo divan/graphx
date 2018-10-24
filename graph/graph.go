@@ -35,6 +35,16 @@ func (g *Graph) Links() []*Link {
 	return g.links
 }
 
+// NumNodes returns total number of graph nodes.
+func (g *Graph) NumNodes() int {
+	return len(g.nodes)
+}
+
+// NumLinks returns total number of graph links.
+func (g *Graph) NumLinks() int {
+	return len(g.links)
+}
+
 // UpdateCache runs various optimization-related
 // calculations, caching etc.
 func (g *Graph) UpdateCache() {
