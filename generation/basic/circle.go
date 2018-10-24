@@ -20,14 +20,19 @@ func NewCircleGenerator(n int) *CircleGenerator {
 func (l *CircleGenerator) Generate() *graph.Graph {
 	data := graph.NewGraph()
 
-	for i := 0; i < l.nodes; i++ {
+	for i := 0; i < l.nodes+1; i++ {
 		addNode(data, i)
 
-		j := i + 1
-		if i == l.nodes-1 {
-			j = 0
+		// close the circle
+		if i == l.nodes {
+			addLink(data, i-1, 0)
+			continue
 		}
-		data.AddLink(id(i), id(j))
+
+		if i == 0 {
+			continue
+		}
+		addLink(data, i-1, i)
 	}
 
 	return data
