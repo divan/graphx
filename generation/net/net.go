@@ -77,7 +77,7 @@ func (d *NetGenerator) Generate() *graph.Graph {
 			if err == nil {
 				from, to := nodeIPs[i], nodeIPs[idx]
 				if !g.LinkExists(from, to) {
-					g.AddLink(nodeIPs[i], nodeIPs[idx])
+					g.AddLink(from, to)
 				}
 			}
 		}
