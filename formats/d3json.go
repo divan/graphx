@@ -113,6 +113,8 @@ func FromD3JSONReader(r io.Reader) (*graph.Graph, error) {
 		g.AddNode(node)
 	}
 
+	g.UpdateCache()
+
 	for _, link := range res.Links {
 		err := g.AddLink(link.Source, link.Target)
 		if err != nil {
