@@ -5,13 +5,15 @@ type Graph struct {
 	nodes []Node
 	links []*Link
 
-	nodeLinks map[string]int
+	nodeLinks   map[string]int
+	nodeIdxByID map[string]int
 }
 
 // NewGraph creates empty graph data.
 func NewGraph() *Graph {
 	return &Graph{
-		nodeLinks: make(map[string]int),
+		nodeLinks:   make(map[string]int),
+		nodeIdxByID: make(map[string]int),
 	}
 }
 
@@ -19,9 +21,10 @@ func NewGraph() *Graph {
 // It preallocates memory for the specified sizes.
 func NewGraphMN(m, n int) *Graph {
 	return &Graph{
-		nodes:     make([]Node, 0, m),
-		links:     make([]*Link, 0, n),
-		nodeLinks: make(map[string]int),
+		nodes:       make([]Node, 0, m),
+		links:       make([]*Link, 0, n),
+		nodeLinks:   make(map[string]int),
+		nodeIdxByID: make(map[string]int),
 	}
 }
 
@@ -52,5 +55,9 @@ func (g *Graph) UpdateCache() {
 	for _, link := range g.links {
 		g.nodeLinks[link.from]++
 		g.nodeLinks[link.to]++
+	}
+	g.nodeIdxByID = make(map[string]int)
+	for i, node := range g.nodes {
+		g.nodeIdxByID[node.ID()] = i
 	}
 }

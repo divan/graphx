@@ -54,12 +54,11 @@ func (g *Graph) LinkByIndices(from, to int) (int, error) {
 
 // NodeByID returns node index by its ID.
 func (g *Graph) NodeByID(id string) (int, error) {
-	for i, node := range g.nodes {
-		if node.ID() == id {
-			return i, nil
-		}
+	idx, ok := g.nodeIdxByID[id]
+	if !ok {
+		return 0, fmt.Errorf("node %s not found", id)
 	}
-	return 0, fmt.Errorf("node %s not found", id)
+	return idx, nil
 }
 
 // NodeIDByIdx returns node ID by its index.
