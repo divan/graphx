@@ -3,7 +3,9 @@ package formats
 import (
 	"bytes"
 	"fmt"
-	"io"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/divan/graphx/graph"
@@ -86,53 +88,40 @@ func TestNewJSONGraph(t *testing.T) {
 	}
 }
 
-func TestNewJSONGraphLarge(t *testing.T) {
-	N := int(10e4)
-	r := generateLargeGraphJSON(N, 2*N)
-
-	graph, err := FromD3JSONReader(r)
+func BenchmarkImportJSON(b *testing.B) {
+	files, err := readTestData()
 	if err != nil {
-		t.Fatal(err)
+		b.Fatalf("Failed to read testdata: %v", err)
 	}
 
-	nodes := graph.Nodes()
-	if len(nodes) != N {
-		t.Fatalf("Expect graph to have %v nodes, but got %d", N, len(nodes))
-	}
+	for _, file := range files {
+		b.Run(file, func(b *testing.B) {
+			fd, err := os.Open(file)
+			if err != nil {
+				b.Fatal(err)
+			}
+			defer fd.Close()
+			b.ResetTimer()
 
-	links := graph.Links()
-	if len(links) != 2*N {
-		t.Fatalf("Expect graph to have %v links, but got %d", 2*N, len(links))
+			for i := 0; i < b.N; i++ {
+				FromD3JSONReader(fd)
+			}
+		})
 	}
 }
 
-func BenchmarkImportJSONGraph(b *testing.B) {
-	N := int(10e4)
-	r := generateLargeGraphJSON(N, 2*N)
-	b.ResetTimer()
+// readTestData returns filenames (with relative path)
+// for files in testdata/ directory.
+func readTestData() ([]string, error) {
+	files, err := ioutil.ReadDir("testdata")
+	if err != nil {
+		return nil, fmt.Errorf("readdir: %s", err)
+	}
 
-	for i := 0; i < b.N; i++ {
-		FromD3JSONReader(r)
+	var ret []string
+	for _, file := range files {
+		path := filepath.Join("testdata", file.Name())
+		ret = append(ret, path)
 	}
-}
-
-// generate large graph with given number of nodes and links.
-func generateLargeGraphJSON(nodes, links int) io.Reader {
-	buf := new(bytes.Buffer)
-	buf.WriteString(`{"nodes":[`)
-	for i := 0; i < nodes; i++ {
-		if i != 0 {
-			buf.WriteString(",")
-		}
-		buf.WriteString(`{"id": "same"}`)
-	}
-	buf.WriteString(`],"links":[`)
-	for i := 0; i < links; i++ {
-		if i != 0 {
-			buf.WriteString(",")
-		}
-		buf.WriteString(`{"source": "same", "target": "same"}`)
-	}
-	buf.WriteString(`]}`)
-	return buf
+	return ret, nil
 }
