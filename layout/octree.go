@@ -20,6 +20,7 @@ type Octree struct {
 type octant interface {
 	Center() *Object
 	Insert(p *Object) octant
+	FindLeaf(id string) (*leaf, bool)
 }
 
 // node represents octant with children, "internal node". Satisifies octant.
@@ -70,9 +71,11 @@ func NewOctreeFromNodes(objects map[string]*Object, force Force) *Octree {
 // newNode initializes a new node.
 func newNode() *node {
 	var leafs [8]octant
-	for i := 0; i < 8; i++ {
-		leafs[i] = newLeaf(nil)
-	}
+	/*
+		for i := 0; i < 8; i++ {
+			leafs[i] = newLeaf(nil)
+		}
+	*/
 	return &node{
 		leafs: &leafs,
 	}
@@ -97,31 +100,36 @@ func (o *Octree) Insert(p *Object) {
 
 // Insert inserts new Point into existing node and returns
 // updated node. Implements octant interface.
-func (n *node) Insert(p *Object) octant {
-	idx := findOctantIdx(n, p)
-	n.leafs[idx] = n.leafs[idx].Insert(p)
-	n.updateMassCenter()
+func (n *node) Insert(o *Object) octant {
+	idx := n.findOctantIdx(o)
+	curLeaf := n.leafs[idx]
+	var l octant
+	if curLeaf == nil {
+		l = newLeaf(o)
+	} else {
+		l = curLeaf.Insert(o)
+	}
+
+	n.leafs[idx] = l
+
 	return n
 }
 
 // Insert inserts new Point into existing leaf and returns updated
 // node, which may be transformed into node. Implements octant interface.
-func (l *leaf) Insert(p *Object) octant {
-	if l == nil || l.Center() == nil {
-		l = newLeaf(p)
-		return l
+func (l *leaf) Insert(o *Object) octant {
+	if l == nil {
+		return newLeaf(o)
 	}
 
 	//external node, and we have two points in one octant.
 	//need to convert it to internal node and divide
-	node := newNode()
-	node.massCenter = massCenter([]*Object{l.Center(), p})
+	n := newNode()
+	n.massCenter = massCenter(l.Center(), o)
+	n.Insert(l.Center())
+	n.Insert(o)
 
-	idx1 := findOctantIdx(node, l.Center())
-	idx2 := findOctantIdx(node, p)
-	node.leafs[idx1] = l
-	node.leafs[idx2] = newLeaf(p)
-	return node
+	return n
 }
 
 // update center of the mass of the given node, calculating it from
@@ -132,10 +140,10 @@ func (n *node) updateMassCenter() {
 		points = append(points, n.leafs[i].Center())
 	}
 
-	n.massCenter = massCenter(points)
+	n.massCenter = massCenter(points...)
 }
 
-func massCenter(points []*Object) *Object {
+func massCenter(points ...*Object) *Object {
 	var (
 		xm, ym, zm float64
 		totalMass  float64
@@ -167,19 +175,19 @@ func massCenter(points []*Object) *Object {
 // 5 - Bottom, Front, Right
 // 6 - Bottom, Back, Left
 // 7 - Bottom, Back, Right
-func findOctantIdx(o octant, p *Object) int {
-	center := o.Center()
+func (n *node) findOctantIdx(o *Object) int {
+	center := n.Center()
 
 	var i int
-	if p.X > center.X {
+	if o.X > center.X {
 		i |= 1
 	}
 
-	if p.Y > center.Y {
+	if o.Y > center.Y {
 		i |= 2
 	}
 
-	if p.Z > center.Z {
+	if o.Z > center.Z {
 		i |= 4
 	}
 	return i
@@ -217,9 +225,9 @@ func (l *leaf) String() string {
 
 // CalcForce calculates force between two nodes using Barne-Hut method.
 func (o *Octree) CalcForce(id string) (*ForceVector, error) {
-	from, err := findLeaf(o.root, id)
-	if err != nil {
-		return nil, err
+	from, ok := o.root.FindLeaf(id)
+	if !ok {
+		return nil, fmt.Errorf("node '%s' not found in octree", id)
 	}
 	return o.calcForce(from, o.root), nil
 }
@@ -252,24 +260,27 @@ func (o *Octree) calcForce(from *leaf, to octant) *ForceVector {
 	return ret
 }
 
-// findLeaf finds leaf for Point by given id.
-func findLeaf(o octant, id string) (*leaf, error) {
-	if l, ok := o.(*leaf); ok {
-		if l == nil || l.Center() == nil {
-			return nil, errors.New("nil leaf")
+func (l *leaf) FindLeaf(id string) (*leaf, bool) {
+	if l == nil {
+		return nil, false
+	}
+	if l.point.ID != id {
+		return nil, false
+	}
+	return l, true
+}
+
+func (n *node) FindLeaf(id string) (*leaf, bool) {
+	for i := 0; i < 8; i++ {
+		if n.leafs[i] == nil {
+			continue
 		}
-		if l.point.ID == id {
-			return l, nil
-		}
-	} else if n, ok := o.(*node); ok {
-		for i := 0; i < 8; i++ {
-			l1, err := findLeaf(n.leafs[i], id)
-			if err == nil {
-				return l1, nil
-			}
+		l, ok := n.leafs[i].FindLeaf(id)
+		if ok {
+			return l, true
 		}
 	}
-	return nil, fmt.Errorf("node '%s' not found in octree", id)
+	return nil, false
 }
 
 // width returns width of the node, calculated from leaf coordinates.
