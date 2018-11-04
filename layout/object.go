@@ -10,14 +10,14 @@ import (
 // Object represents an object in 3D space with some ID information
 // attached to it.
 type Object struct {
-	_ID   string  `json:"id"`
+	_ID   string  `json:"-"`
 	_X    float64 `json:"x"`
 	_Y    float64 `json:"y"`
 	_Z    float64 `json:"z"`
 	_Mass float64 `json:"mass"`
 
-	velocity *Velocity
-	force    *ForceVector
+	velocity *Velocity    `json:"-"`
+	force    *ForceVector `json:"-"`
 }
 
 // NewObject creates new object with given point.
