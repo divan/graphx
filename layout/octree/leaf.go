@@ -5,16 +5,21 @@ import "fmt"
 // Leaf represents Octant without children, "external node". Satisfies Octant.
 type Leaf struct {
 	Point
+
+	octree *Octree // to access cache of octree
 }
 
 // make sure Leaf satisfies Octant interface at compile time.
 var _ = Octant(&Leaf{})
 
 // NewLeaf initializes a new Leaf.
-func NewLeaf(p Point) *Leaf {
-	return &Leaf{
-		Point: p,
+func (o *Octree) NewLeaf(p Point) *Leaf {
+	leaf := &Leaf{
+		Point:  p,
+		octree: o,
 	}
+	o.ids[p.ID()] = leaf
+	return leaf
 }
 
 // Center returns point of the Leaf. Implements Octant interface.
@@ -26,12 +31,12 @@ func (l *Leaf) Center() Point {
 // node, which may be transformed into node. Implements Octant interface.
 func (l *Leaf) Insert(p Point) Octant {
 	if l == nil {
-		return NewLeaf(p)
+		return l.octree.NewLeaf(p)
 	}
 
 	//external node, and we have two points in one Octant.
 	//need to convert it to internal node and divide
-	n := NewNode()
+	n := l.octree.NewNode()
 	n.massCenter = massCenter(l.Center(), p)
 	n.Insert(l.Center())
 	n.Insert(p)

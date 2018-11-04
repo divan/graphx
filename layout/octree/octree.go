@@ -9,6 +9,7 @@ import (
 // See https://en.wikipedia.org/wiki/Octree for details.
 type Octree struct {
 	Root Octant
+	ids  map[string]Octant // for fast lookup in findLeaf
 }
 
 // octant represent a node in octree, which is an octant of a cube.
@@ -20,13 +21,15 @@ type Octant interface {
 
 // New inits new octree.
 func New() *Octree {
-	return &Octree{}
+	return &Octree{
+		ids: make(map[string]Octant),
+	}
 }
 
 // Insert adds new Point into the Octree data structure.
 func (o *Octree) Insert(p Point) {
 	if o.Root == nil {
-		o.Root = NewLeaf(p)
+		o.Root = o.NewLeaf(p)
 		return
 	}
 
@@ -35,32 +38,11 @@ func (o *Octree) Insert(p Point) {
 
 // FindLeafs searches for the leaf with the given id.
 func (o *Octree) FindLeaf(id string) (Octant, error) {
-	oct, ok := o.findLeaf(o.Root, id)
+	oct, ok := o.ids[id]
 	if !ok {
 		return nil, errors.New("leaf not found")
 	}
 	return oct, nil
-}
-
-func (o *Octree) findLeaf(oct Octant, id string) (Octant, bool) {
-	switch x := oct.(type) {
-	case *Leaf:
-		if x.ID() == id {
-			return x, true
-		}
-		return nil, false
-	case *Node:
-		for i := 0; i < 8; i++ {
-			if x.Leafs[i] == nil {
-				continue
-			}
-			leaf, ok := o.findLeaf(x.Leafs[i], id)
-			if ok {
-				return leaf, true
-			}
-		}
-	}
-	return nil, false
 }
 
 // String implements Stringer interface for octree.

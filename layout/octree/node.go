@@ -9,16 +9,19 @@ import (
 type Node struct {
 	Leafs      *[8]Octant
 	massCenter Point
+
+	octree *Octree // to access cache of octree
 }
 
 // make sure Node satisfies Octant interface at compile time.
 var _ = Octant(&Node{})
 
 // NewNode initializes a new Node.
-func NewNode() *Node {
+func (o *Octree) NewNode() *Node {
 	var leafs [8]Octant
 	return &Node{
-		Leafs: &leafs,
+		Leafs:  &leafs,
+		octree: o,
 	}
 }
 
@@ -34,7 +37,7 @@ func (n *Node) Insert(p Point) Octant {
 	leaf := n.Leafs[idx]
 	var l Octant
 	if leaf == nil {
-		l = NewLeaf(p)
+		l = n.octree.NewLeaf(p)
 	} else {
 		l = leaf.Insert(p)
 	}
