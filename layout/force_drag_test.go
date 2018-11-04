@@ -5,9 +5,9 @@ import "testing"
 func TestForceDrag(t *testing.T) {
 	objects := make(map[string]*Object)
 
-	objects["1"] = NewObjectID(NewPoint(1, 1, 1), "1")
-	objects["2"] = NewObjectID(NewPoint(2, 2, 2), "2")
-	objects["3"] = NewObjectID(NewPoint(3, 3, 3), "3")
+	objects["1"] = NewObjectID(1, 1, 1, "1")
+	objects["2"] = NewObjectID(2, 2, 2, "2")
+	objects["3"] = NewObjectID(3, 3, 3, "3")
 
 	for k := range objects {
 		objects[k].velocity = &Velocity{10, 10, 10}

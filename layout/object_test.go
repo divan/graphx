@@ -11,13 +11,13 @@ func TestDistance(t *testing.T) {
 		expected float64
 	}{
 		{
-			from:     NewObject(NewPoint(0, 0, 0)),
-			to:       NewObject(NewPoint(10, 10, 10)),
+			from:     NewObject(0, 0, 0),
+			to:       NewObject(10, 10, 10),
 			expected: math.Sqrt(300),
 		},
 		{
-			from:     NewObject(NewPoint(2, 3, 1)),
-			to:       NewObject(NewPoint(8, -5, 0)),
+			from:     NewObject(2, 3, 1),
+			to:       NewObject(8, -5, 0),
 			expected: math.Sqrt(101),
 		},
 	}
@@ -30,7 +30,7 @@ func TestDistance(t *testing.T) {
 }
 
 func TestObjectVelocity(t *testing.T) {
-	o := NewObject(NewPoint(1, 1, 1))
+	o := NewObject(1, 1, 1)
 	o.velocity = &Velocity{10, 10, 10}
 
 	o.updateVelocity(1, ZeroForce())
@@ -60,7 +60,7 @@ func TestObjectVelocity(t *testing.T) {
 }
 
 func TestObjectMove(t *testing.T) {
-	o := NewObject(NewPoint(100, 100, 100))
+	o := NewObject(100, 100, 100)
 	o.velocity = ZeroVelocity() // &Velocity{10, 10, 10}
 	o.force = &ForceVector{1, 1, 1}
 

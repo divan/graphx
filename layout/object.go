@@ -2,23 +2,30 @@ package layout
 
 import (
 	"fmt"
+	"math"
+
+	"github.com/divan/graphx/layout/octree"
 )
 
 // Object represents an object in 3D space with some ID information
 // attached to it.
 type Object struct {
-	_ID string
-	*Point
-	_Mass float64
+	_ID   string  `json:"id"`
+	_X    float64 `json:"x"`
+	_Y    float64 `json:"y"`
+	_Z    float64 `json:"z"`
+	_Mass float64 `json:"mass"`
 
 	velocity *Velocity
 	force    *ForceVector
 }
 
 // NewObject creates new object with given point.
-func NewObject(point *Point) *Object {
+func NewObject(x, y, z float64) *Object {
 	return &Object{
-		Point: point,
+		_X:    x,
+		_Y:    y,
+		_Z:    z,
 		_Mass: 1,
 
 		velocity: ZeroVelocity(),
@@ -27,8 +34,8 @@ func NewObject(point *Point) *Object {
 }
 
 // NewObjectID creates new object with given coordinates and ID.
-func NewObjectID(p *Point, id string) *Object {
-	ret := NewObject(p)
+func NewObjectID(x, y, z float64, id string) *Object {
+	ret := NewObject(x, y, z)
 	ret._ID = id
 	return ret
 }
@@ -38,9 +45,27 @@ func (o *Object) String() string {
 	return fmt.Sprintf("[%.2f, %.2f, %.2f, m: %.2f]", o.X(), o.Y(), o.Z(), o.Mass())
 }
 
-// Implement octree.Point
-func (o *Object) ID() string    { return o._ID }
+// X implements Point interface.
+func (o *Object) X() float64 { return o._X }
+
+// Y implements Point interface.
+func (o *Object) Y() float64 { return o._Y }
+
+// Z implements Point interface.
+func (o *Object) Z() float64 { return o._Z }
+
+// ID implements Point interface.
+func (o *Object) ID() string { return o._ID }
+
+// Mass implements Point interface.
 func (o *Object) Mass() float64 { return o._Mass }
+
+// SetPosition sets points positon to the given coordines.
+func (o *Object) SetPosition(x, y, z float64) {
+	o._X = x
+	o._Y = y
+	o._Z = z
+}
 
 // Move updates object positions by calculating movement with current force and
 // velocity in a time interval dt.
@@ -72,19 +97,10 @@ func (o Object) Velocity() *Velocity {
 	return o.velocity
 }
 
-// Velocity represents velocity vector.
-type Velocity struct {
-	X float64
-	Y float64
-	Z float64
-}
-
-// ZeroVelocity is, well, zero value for velocity.
-func ZeroVelocity() *Velocity {
-	return &Velocity{}
-}
-
-// String implements Stringer interface for velocity.
-func (v *Velocity) String() string {
-	return fmt.Sprintf("V(%.1f, %.1f, %.1f)", v.X, v.Y, v.Z)
+// distance calculated distance betweein two objects in 3D space.
+func distance(from, to octree.Point) float64 {
+	dx := float64(to.X() - from.X())
+	dy := float64(to.Y() - from.Y())
+	dz := float64(to.Z() - from.Z())
+	return math.Sqrt(dx*dx + dy*dy + dz*dz)
 }

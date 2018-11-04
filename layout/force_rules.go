@@ -65,7 +65,7 @@ var EachOnEach = func(
 	links []*graph.Link) {
 	var newObjects = make(map[string]*Object)
 	for id, node := range objects {
-		newObjects[id] = NewObject(&Point{})
+		newObjects[id] = NewObject(0, 0, 0)
 		newObjects[id].force.DX = node.force.DX
 		newObjects[id].force.DY = node.force.DY
 		newObjects[id].force.DZ = node.force.DZ

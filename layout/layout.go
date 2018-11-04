@@ -20,7 +20,7 @@ type Layout struct {
 	g *graph.Graph
 
 	objects   map[string]*Object // node ID as a key
-	positions []*Point
+	positions []*Object
 	links     []*graph.Link
 
 	confMu sync.RWMutex
@@ -41,7 +41,7 @@ func NewWithForces(g *graph.Graph, forces ...Force) *Layout {
 	l := &Layout{
 		g:         g,
 		objects:   make(map[string]*Object),
-		positions: make([]*Point, 0, len(g.Nodes())),
+		positions: make([]*Object, 0, len(g.Nodes())),
 		links:     g.Links(),
 		forces:    forces,
 	}
@@ -79,11 +79,10 @@ func (l *Layout) addObject(node graph.Node) {
 	// TODO: handle weight
 
 	x, y, z := randomPosition(lastIdx)
-	point := NewPoint(x, y, z)
-	obj := NewObjectID(point, node.ID())
+	object := NewObjectID(x, y, z, node.ID())
 
-	l.positions = append(l.positions, point)
-	l.objects[node.ID()] = obj
+	l.positions = append(l.positions, object)
+	l.objects[node.ID()] = object
 }
 
 // randomPosition generates x,y,z coordinates pseudo-randomly spread around the
@@ -168,7 +167,7 @@ func (l *Layout) Positions() map[string]*Object {
 
 // Positions returns nodes information as a slice, where index order is equal to the
 // original graph nodes order.
-func (l *Layout) PositionsSlice() []*Point {
+func (l *Layout) PositionsSlice() []*Object {
 	return l.positions
 }
 
@@ -195,15 +194,14 @@ func (l *Layout) SetConfig(c Config) {
 // SetPositions overwrites objects positions and recalculates layout internal stuff
 // to be in sync with new positions.
 // Positions slice should be the same size and order as Nodes.
-func (l *Layout) SetPositions(positions []*Point) {
+func (l *Layout) SetPositions(positions []*Object) {
 	l.positions = positions
 
 	// recalculate objects with new positions
 	l.resetObjects()
 	for i, node := range l.g.Nodes() {
 		id := node.ID()
-		point := l.positions[i]
-		obj := NewObjectID(point, node.ID())
+		obj := l.positions[i]
 		l.objects[id] = obj
 	}
 }

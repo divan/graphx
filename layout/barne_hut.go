@@ -63,12 +63,12 @@ func (b *BarneHut) calcForce(oc *octree.Octree, from, to octree.Octant) *ForceVe
 			c := from.Center()
 			f, ok := c.(*Object)
 			if !ok {
-				f = NewObject(NewPoint(c.X(), c.Y(), c.Z()))
+				f = NewObject(c.X(), c.Y(), c.Z())
 			}
 			c = to.Center()
 			t, ok := c.(*Object)
 			if !ok {
-				t = NewObject(NewPoint(c.X(), c.Y(), c.Z()))
+				t = NewObject(c.X(), c.Y(), c.Z())
 			}
 			return b.force.Apply(f, t)
 		}
