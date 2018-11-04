@@ -31,7 +31,11 @@ func TestLayoutAdd(t *testing.T) {
 	g := graph.NewGraph()
 	g.AddNode(graph.NewBasicNode("node 0"))
 	g.AddNode(graph.NewBasicNode("node 1"))
-	g.AddLink("node 0", "node 1")
+	g.UpdateCache() // TODO(divan): hide or abstract this
+	err := g.AddLink("node 0", "node 1")
+	if err != nil {
+		t.Fatalf("Add link failed: %v", err)
+	}
 	repelling := NewGravityForce(-1.0, ForEachNode)
 	l := NewWithForces(g, repelling)
 
