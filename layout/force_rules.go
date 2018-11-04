@@ -1,8 +1,6 @@
 package layout
 
 import (
-	"fmt"
-
 	"github.com/divan/graphx/graph"
 )
 
@@ -40,16 +38,10 @@ var BarneHutMethod = func(
 	objects map[string]*Object,
 	links []*graph.Link) {
 
-	otree := NewOctreeFromNodes(objects, force)
+	forces := NewBarneHut(force).Calculate(objects)
 
-	for i, node := range objects {
-		f, err := otree.CalcForce(i)
-		if err != nil {
-			fmt.Println("[ERROR] Force calc failed:", i, err)
-			break
-		}
-
-		objects[node.ID].force.Add(f)
+	for id := range objects {
+		objects[id].force.Add(forces[id])
 	}
 }
 

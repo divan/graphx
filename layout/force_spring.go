@@ -19,7 +19,7 @@ func NewSpringForce(stiffness, length float64, rule ForceRule) Force {
 
 // Apply calculates the spring force between two nodes. Satisfies Force interface.
 func (s *SpringForce) Apply(from, to *Object) *ForceVector {
-	actualLength := distance(from.Point, to.Point)
+	actualLength := distance(from, to)
 	if actualLength < 1 {
 		actualLength = s.Length / 2
 	}
@@ -28,9 +28,9 @@ func (s *SpringForce) Apply(from, to *Object) *ForceVector {
 	c := s.Stiffness * stretch / actualLength // * float64(from.Mass)
 
 	return &ForceVector{
-		DX: c * float64(to.X-from.X) / 2,
-		DY: c * float64(to.Y-from.Y) / 2,
-		DZ: c * float64(to.Z-from.Z) / 2,
+		DX: c * float64(to.X()-from.X()) / 2,
+		DY: c * float64(to.Y()-from.Y()) / 2,
+		DZ: c * float64(to.Z()-from.Z()) / 2,
 	}
 }
 

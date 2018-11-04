@@ -67,17 +67,17 @@ func TestGravity(t *testing.T) {
 		right2 := l_drag.objects["1"]
 
 		// X for right2 should be much smaller than right1, because drag force applied and repeated 100 times
-		if right1.X/right2.X < 2 {
-			t.Fatalf("Expect right2 X values be signifantly smaller than right1 X (%.5f < %.5f)", right2.X, right1.X)
+		if right1.X()/right2.X() < 2 {
+			t.Fatalf("Expect right2 X values be signifantly smaller than right1 X (%.5f < %.5f)", right2.X(), right1.X())
 		}
 	})
 }
 
 // checkDistance checks left and right distances from their initial positions (x0 and x1). they should be equal.
 func checkDistance(t *testing.T, left, right *Object, x0, x1 float64) {
-	dx1, dx2 := x0-left.X, right.X-x1
-	dy1, dy2 := x0-left.Y, right.Y-x1
-	dz1, dz2 := x0-left.Z, right.Z-x1
+	dx1, dx2 := x0-left.X(), right.X()-x1
+	dy1, dy2 := x0-left.Y(), right.Y()-x1
+	dz1, dz2 := x0-left.Z(), right.Z()-x1
 	if dx1-dx2 > 0.0001 {
 		t.Fatalf("Expect dX be equal for left and right, but got (%.2f, %.2f)", dx1, dx2)
 	}

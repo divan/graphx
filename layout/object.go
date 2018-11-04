@@ -7,9 +7,9 @@ import (
 // Object represents an object in 3D space with some ID information
 // attached to it.
 type Object struct {
-	ID string
+	_ID string
 	*Point
-	Mass float64
+	_Mass float64
 
 	velocity *Velocity
 	force    *ForceVector
@@ -19,7 +19,7 @@ type Object struct {
 func NewObject(point *Point) *Object {
 	return &Object{
 		Point: point,
-		Mass:  1,
+		_Mass: 1,
 
 		velocity: ZeroVelocity(),
 		force:    ZeroForce(),
@@ -29,14 +29,18 @@ func NewObject(point *Point) *Object {
 // NewObjectID creates new object with given coordinates and ID.
 func NewObjectID(p *Point, id string) *Object {
 	ret := NewObject(p)
-	ret.ID = id
+	ret._ID = id
 	return ret
 }
 
 // String implements Stringer interface for Object.
 func (o *Object) String() string {
-	return fmt.Sprintf("[%.2f, %.2f, %.2f, m: %.2f]", o.X, o.Y, o.Z, o.Mass)
+	return fmt.Sprintf("[%.2f, %.2f, %.2f, m: %.2f]", o.X(), o.Y(), o.Z(), o.Mass())
 }
+
+// Implement octree.Point
+func (o *Object) ID() string    { return o._ID }
+func (o *Object) Mass() float64 { return o._Mass }
 
 // Move updates object positions by calculating movement with current force and
 // velocity in a time interval dt.
@@ -44,10 +48,10 @@ func (o *Object) Move(dt int) (dx, dy, dz float64) {
 	o.updateVelocity(dt, o.force)
 	v := o.velocity
 	t := float64(dt)
-	o.X += t * v.X
-	o.Y += t * v.Y
-	o.Z += t * v.Z
-	return o.X, o.Y, o.Z
+	o._X += t * v.X
+	o._Y += t * v.Y
+	o._Z += t * v.Z
+	return o._X, o._Y, o._Z
 }
 
 // updateVelocity updates object velocity with a current force applied.
@@ -56,9 +60,9 @@ func (o *Object) updateVelocity(dt int, force *ForceVector) {
 		return
 	}
 
-	o.velocity.X += float64(dt) * force.DX / float64(o.Mass)
-	o.velocity.Y += float64(dt) * force.DY / float64(o.Mass)
-	o.velocity.Z += float64(dt) * force.DZ / float64(o.Mass)
+	o.velocity.X += float64(dt) * force.DX / float64(o.Mass())
+	o.velocity.Y += float64(dt) * force.DY / float64(o.Mass())
+	o.velocity.Z += float64(dt) * force.DZ / float64(o.Mass())
 }
 
 func (o Object) Force() *ForceVector {

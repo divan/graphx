@@ -22,7 +22,7 @@ func TestDistance(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		got := distance(test.from.Point, test.to.Point)
+		got := distance(test.from, test.to)
 		if got != test.expected {
 			t.Fatalf("Expected %.3f, but got %.3f", test.expected, got)
 		}
