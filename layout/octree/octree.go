@@ -45,7 +45,7 @@ func (o *Octree) FindLeaf(id string) (Octant, error) {
 func (o *Octree) findLeaf(oct Octant, id string) (Octant, bool) {
 	switch x := oct.(type) {
 	case *Leaf:
-		if x.point.ID() == id {
+		if x.ID() == id {
 			return x, true
 		}
 		return nil, false

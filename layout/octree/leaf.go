@@ -4,7 +4,7 @@ import "fmt"
 
 // Leaf represents Octant without children, "external node". Satisfies Octant.
 type Leaf struct {
-	point Point
+	Point
 }
 
 // make sure Leaf satisfies Octant interface at compile time.
@@ -13,13 +13,13 @@ var _ = Octant(&Leaf{})
 // NewLeaf initializes a new Leaf.
 func NewLeaf(p Point) *Leaf {
 	return &Leaf{
-		point: p,
+		Point: p,
 	}
 }
 
 // Center returns point of the Leaf. Implements Octant interface.
 func (l *Leaf) Center() Point {
-	return l.point
+	return l.Point
 }
 
 // Insert inserts new Point into existing Leaf and returns updated
