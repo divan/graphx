@@ -37,6 +37,7 @@ func (g *Graph) AddLink(from, to string) error {
 	}
 
 	g.links = append(g.links, link)
+	g.cacheLink(from, to)
 	return nil
 }
 

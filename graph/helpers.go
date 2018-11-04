@@ -56,6 +56,13 @@ func (g *Graph) LinkByIndices(from, to int) (int, error) {
 func (g *Graph) NodeByID(id string) (int, error) {
 	idx, ok := g.nodeIdxByID[id]
 	if !ok {
+		// not in cache, attempt to find and cache
+		for i := range g.nodes {
+			if g.nodes[i].ID() == id {
+				g.cacheNode(g.nodes[i], idx)
+				return idx, nil
+			}
+		}
 		return 0, fmt.Errorf("node %s not found", id)
 	}
 	return idx, nil

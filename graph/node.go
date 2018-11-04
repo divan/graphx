@@ -19,11 +19,14 @@ type WeightedNode interface {
 // AddNode adds new node to graph.
 func (g *Graph) AddNode(node Node) {
 	g.nodes = append(g.nodes, node)
+	g.cacheNode(node, len(g.nodes)-1)
 }
 
 // AddNodes adds new nodes to graph.
 func (g *Graph) AddNodes(nodes ...Node) {
-	g.nodes = append(g.nodes, nodes...)
+	for _, node := range nodes {
+		g.AddNode(node)
+	}
 }
 
 // BasicNode represents basic built-in node type for simple cases.

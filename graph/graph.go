@@ -51,13 +51,11 @@ func (g *Graph) NumLinks() int {
 // UpdateCache runs various optimization-related
 // calculations, caching etc.
 func (g *Graph) UpdateCache() {
-	g.nodeLinks = make(map[string]int)
+	g.ResetCache()
 	for _, link := range g.links {
-		g.nodeLinks[link.from]++
-		g.nodeLinks[link.to]++
+		g.cacheLink(link.from, link.to)
 	}
-	g.nodeIdxByID = make(map[string]int)
 	for i, node := range g.nodes {
-		g.nodeIdxByID[node.ID()] = i
+		g.cacheNode(node, i)
 	}
 }
