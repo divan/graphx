@@ -28,8 +28,8 @@ func (b *BarneHut) Calculate(objects map[string]*Object) map[string]*ForceVector
 	}
 
 	forces := make(map[string]*ForceVector)
-	for _, o := range objects {
-		forces[o.ID()] = b.CalcForce(oc, o.ID())
+	for id := range objects {
+		forces[id] = b.CalcForce(oc, id)
 	}
 
 	return forces
@@ -57,7 +57,7 @@ func (b *BarneHut) calcForce(oc *octree.Octree, from, to octree.Octant) *ForceVe
 
 		r := distance(from.Center(), to.Center())
 
-		if float64(width)/float64(r) < b.theta {
+		if width/r < b.theta {
 			// FIXME. TODO(divan): this is temporary hack to verify tests.
 			// Refactor point/object represtnations here and in octree and/or refactor forces
 			c := from.Center()

@@ -9,6 +9,7 @@ import (
 type Node struct {
 	Leafs      *[8]Octant
 	massCenter Point
+	width      float64 // box width
 
 	octree *Octree // to access cache of octree
 }
@@ -43,6 +44,7 @@ func (n *Node) Insert(p Point) Octant {
 	}
 
 	n.Leafs[idx] = l
+	n.updateWidth()
 	return n
 }
 
@@ -124,29 +126,32 @@ func (n *Node) String() string {
 }
 
 // Width returns width of the Node, calculated from leaf coordinates.
-func (n *Node) Width() int32 {
+func (n *Node) Width() float64 {
+	return n.width
+}
+
+// updateWidth recalculates node's box width (useful for barne-hut method).
+func (n *Node) updateWidth() {
 	// find two non-nil nodes
+	var max float64
 	for i := 0; i < 8; i++ {
-		if n.Leafs[i] != nil && n.Leafs[i].Center() != nil {
-			for j := 0; j < 8; j++ {
-				if n.Leafs[j] != nil && n.Leafs[j].Center() != nil {
+		if n.Leafs[i] != nil {
+			for j := i + 1; j < 8; j++ {
+				if n.Leafs[j] != nil {
 					p1, p2 := n.Leafs[i].Center(), n.Leafs[j].Center()
+
 					// calculate non-zero difference in one of the dimensions (any)
-					xwidth := math.Abs(float64(p1.X() - p2.X()))
-					if xwidth > 0 {
-						return int32(xwidth)
-					}
-					ywidth := math.Abs(float64(p1.Y() - p2.Y()))
-					if ywidth > 0 {
-						return int32(xwidth)
-					}
-					zwidth := math.Abs(float64(p1.Z() - p2.Z()))
-					if zwidth > 0 {
-						return int32(xwidth)
+					dx := math.Abs(p1.X() - p2.X())
+					dy := math.Abs(p1.Y() - p2.Y())
+					dz := math.Abs(p1.Z() - p2.Z())
+
+					width := math.Max(dx, math.Max(dy, dz))
+					if width > max {
+						max = width
 					}
 				}
 			}
 		}
 	}
-	return 0
+	n.width = max
 }
