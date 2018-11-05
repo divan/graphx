@@ -34,6 +34,9 @@ func (l *Leaf) Insert(p Point) Octant {
 		return l.octree.NewLeaf(p)
 	}
 
+	// remove cached leaf id
+	delete(l.octree.ids, p.ID())
+
 	//external node, and we have two points in one Octant.
 	//need to convert it to internal node and divide
 	n := l.octree.NewNode()
