@@ -18,7 +18,7 @@ var DefaultConfig = Config{
 
 // ForcesFromConfig constructs default forces from the given config.
 func forcesFromConfig(config Config) []Force {
-	repelling := NewGravityForce(config.Repelling, BarneHutMethod) // FIXME: replace with BarneHut when it's fixed
+	repelling := NewGravityForce(config.Repelling, BarneHutMethod)
 	springs := NewSpringForce(config.SpringStiffness, config.SpringLen, ForEachLink)
 	drag := NewDragForce(config.DragCoeff, ForEachNode)
 	return []Force{repelling, springs, drag}
