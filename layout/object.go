@@ -99,8 +99,8 @@ func (o Object) Velocity() *Velocity {
 
 // distance calculated distance betweein two objects in 3D space.
 func distance(from, to octree.Point) float64 {
-	dx := float64(to.X() - from.X())
-	dy := float64(to.Y() - from.Y())
-	dz := float64(to.Z() - from.Z())
+	dx := to.X() - from.X()
+	dy := to.Y() - from.Y()
+	dz := to.Z() - from.Z()
 	return math.Sqrt(dx*dx + dy*dy + dz*dz)
 }
