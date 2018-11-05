@@ -1,7 +1,6 @@
 package octree
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -40,7 +39,7 @@ func (o *Octree) Insert(p Point) {
 func (o *Octree) FindLeaf(id string) (Octant, error) {
 	oct, ok := o.ids[id]
 	if !ok {
-		return nil, errors.New("leaf not found")
+		return nil, fmt.Errorf("leaf '%s' not found", id)
 	}
 	return oct, nil
 }
