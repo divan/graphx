@@ -37,33 +37,29 @@ func FromPositionsJSONFile(file string) ([]Position, error) {
 
 // ToPositionsJSON writes points positions to io.Writer. Index should correspond the original graph
 // nodes indicies.
-func ToPositionsJSON(objects []*layout.Object, w io.Writer) error {
-	pos := make([]Position, 0, len(objects))
-	for i, o := range objects {
-		pos[i] = Position{o.X(), o.Y(), o.Z()}
-	}
-	return json.NewEncoder(w).Encode(pos)
+func ToPositionsJSON(positions []*layout.Position, w io.Writer) error {
+	return json.NewEncoder(w).Encode(positions)
 }
 
 // ToPositionsJSONFile writes points positions to the file. Index should correspond the original graph
 // nodes indicies.
-func ToPositionsJSONFile(objects []*layout.Object, file string) error {
+func ToPositionsJSONFile(positions []*layout.Position, file string) error {
 	fd, err := os.Create(file)
 	if err != nil {
 		return fmt.Errorf("create positions json: %v", err)
 	}
 	defer fd.Close()
-	return ToPositionsJSON(objects, fd)
+	return ToPositionsJSON(positions, fd)
 }
 
 // ToPositionsNGraph writes points positions to the io.Writer in the NGraph binary format.
-func ToPositionsNGraph(positions []*layout.Object, w io.Writer) error {
+func ToPositionsNGraph(positions []*layout.Position, w io.Writer) error {
 	iw := newInt32LEWriter(w)
 
 	for k := range positions {
-		iw.Write(int32(positions[k].X()))
-		iw.Write(int32(positions[k].Y()))
-		iw.Write(int32(positions[k].Z()))
+		iw.Write(int32(positions[k].X))
+		iw.Write(int32(positions[k].Y))
+		iw.Write(int32(positions[k].Z))
 		if iw.err != nil {
 			return fmt.Errorf("write Int32LE: %v", iw.err)
 		}
@@ -73,7 +69,7 @@ func ToPositionsNGraph(positions []*layout.Object, w io.Writer) error {
 }
 
 // ToPositionsNGraphFile writes points positions to the file in the NGraph binary format.
-func ToPositionsNGraphFile(positions []*layout.Object, file string) error {
+func ToPositionsNGraphFile(positions []*layout.Position, file string) error {
 	fd, err := os.Create(file)
 	if err != nil {
 		return fmt.Errorf("create positions ngraph binary: %v", err)

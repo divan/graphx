@@ -66,7 +66,7 @@ func main() {
 				Source string `json:"source"`
 				Target string `json:"target"`
 			} `json:"links"`
-			Positions []*layout.Object `json:"positions"`
+			Positions []*layout.Position `json:"positions"`
 		}
 
 		// read input file again
