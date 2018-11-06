@@ -68,12 +68,6 @@ func (b *BarneHut) calcForce(oc *octree.Octree, from, to octree.Octant) *ForceVe
 		}
 
 		for _, l := range node.Leafs {
-			if l == nil {
-				continue
-			}
-			if from == l {
-				continue
-			}
 			f := b.calcForce(oc, from, l)
 			ret.Add(f)
 		}
@@ -84,9 +78,9 @@ func (b *BarneHut) calcForce(oc *octree.Octree, from, to octree.Octant) *ForceVe
 // boundingBox calculates the bounding box that fits all the points.
 func boundingBox(objects map[string]*Object) *octree.Box {
 	var (
-		minX, maxX float64
-		minY, maxY float64
-		minZ, maxZ float64
+		minX, maxX = math.MaxFloat64, -math.MaxFloat64
+		minY, maxY = math.MaxFloat64, -math.MaxFloat64
+		minZ, maxZ = math.MaxFloat64, -math.MaxFloat64
 	)
 	for i := range objects {
 		minX = math.Min(minX, objects[i].X())
