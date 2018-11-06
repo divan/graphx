@@ -2,14 +2,13 @@ package octree
 
 import (
 	"fmt"
-	"math"
 )
 
 // Node represents Octant with children, "internal node". Satisifies Octant.
 type Node struct {
 	Leafs      *[8]Octant
 	massCenter Point
-	width      float64 // box width
+	box        *Box
 
 	octree *Octree // to access cache of octree
 }
@@ -18,11 +17,12 @@ type Node struct {
 var _ = Octant(&Node{})
 
 // NewNode initializes a new Node.
-func (o *Octree) NewNode() *Node {
+func (o *Octree) NewNode(box *Box) *Node {
 	var leafs [8]Octant
 	return &Node{
 		Leafs:  &leafs,
 		octree: o,
+		box:    box,
 	}
 }
 
@@ -33,18 +33,17 @@ func (n *Node) Center() Point {
 
 // Insert inserts new Point into existing Node and returns
 // updated Node. Implements Octant interface.
-func (n *Node) Insert(p Point) Octant {
-	idx := n.findOctantIdx(p)
+func (n *Node) Insert(p Point, parentBox *Box) Octant {
+	idx, box := n.findOctantIdx(p, *parentBox)
 	leaf := n.Leafs[idx]
 	var l Octant
 	if leaf == nil {
-		l = n.octree.NewLeaf(p)
+		l = n.octree.NewLeaf(p, box)
 	} else {
-		l = leaf.Insert(p)
+		l = leaf.Insert(p, box)
 	}
 
 	n.Leafs[idx] = l
-	n.updateWidth()
 	return n
 }
 
@@ -79,7 +78,7 @@ func massCenter(points ...Point) Point {
 }
 
 // findOctantIdx returns index of 8-length array with children of the
-// given Octant. It's in following order:
+// given Octant and its Box. It's in following order:
 // 0 - Top, Front, Left
 // 1 - Top, Front, Right
 // 2 - Top, Back, Left
@@ -88,22 +87,36 @@ func massCenter(points ...Point) Point {
 // 5 - Bottom, Front, Right
 // 6 - Bottom, Back, Left
 // 7 - Bottom, Back, Right
-func (n *Node) findOctantIdx(p Point) int {
-	center := n.Center()
+func (n *Node) findOctantIdx(p Point, parentBox Box) (int, *Box) {
+	midX, midY, midZ := parentBox.Center()
 
-	var i int
-	if p.X() > center.X() {
+	var (
+		i   int
+		box = parentBox // build new box based on parentBox
+	)
+	if p.X() > midX {
 		i |= 1
+
+		box.Left = midX
+	} else {
+		box.Right = midX
 	}
 
-	if p.Y() > center.Y() {
+	if p.Y() > midY {
 		i |= 2
+
+		box.Bottom = midY
+	} else {
+		box.Top = midY
 	}
 
-	if p.Z() > center.Z() {
+	if p.Z() > midZ {
 		i |= 4
+		box.Front = midZ
+	} else {
+		box.Back = midZ
 	}
-	return i
+	return i, &box
 }
 
 // String implements fmt.Stringer interface for Node.
@@ -127,31 +140,10 @@ func (n *Node) String() string {
 
 // Width returns width of the Node, calculated from leaf coordinates.
 func (n *Node) Width() float64 {
-	return n.width
+	return n.box.Width()
 }
 
-// updateWidth recalculates node's box width (useful for barne-hut method).
-func (n *Node) updateWidth() {
-	// find two non-nil nodes
-	var max float64
-	for i := 0; i < 8; i++ {
-		if n.Leafs[i] != nil {
-			for j := i + 1; j < 8; j++ {
-				if n.Leafs[j] != nil {
-					p1, p2 := n.Leafs[i].Center(), n.Leafs[j].Center()
-
-					// calculate non-zero difference in one of the dimensions (any)
-					dx := math.Abs(p1.X() - p2.X())
-					dy := math.Abs(p1.Y() - p2.Y())
-					dz := math.Abs(p1.Z() - p2.Z())
-
-					width := math.Max(dx, math.Max(dy, dz))
-					if width > max {
-						max = width
-					}
-				}
-			}
-		}
-	}
-	n.width = max
+// Box returns bounding box. Implements Octant.
+func (n *Node) Box() *Box {
+	return n.box
 }

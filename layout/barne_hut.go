@@ -1,6 +1,8 @@
 package layout
 
 import (
+	"math"
+
 	"github.com/divan/graphx/layout/octree"
 )
 
@@ -22,7 +24,8 @@ func NewBarneHut(force Force) *BarneHut {
 }
 
 func (b *BarneHut) Calculate(objects map[string]*Object) map[string]*ForceVector {
-	oc := octree.New()
+	box := boundingBox(objects)
+	oc := octree.New(box)
 	for _, o := range objects {
 		oc.Insert(o)
 	}
@@ -46,6 +49,9 @@ func (b *BarneHut) CalcForce(oc *octree.Octree, id string) *ForceVector {
 
 func (b *BarneHut) calcForce(oc *octree.Octree, from, to octree.Octant) *ForceVector {
 	ret := ZeroForce()
+	if to == from {
+		return ret
+	}
 	if leaf, ok := to.(*octree.Leaf); ok {
 		if leaf == nil {
 			return ret
@@ -65,10 +71,10 @@ func (b *BarneHut) calcForce(oc *octree.Octree, from, to octree.Octant) *ForceVe
 			if !ok {
 				f = NewObject(c.X(), c.Y(), c.Z())
 			}
-			c = to.Center()
-			t, ok := c.(*Object)
+			c1 := to.Center()
+			t, ok := c1.(*Object)
 			if !ok {
-				t = NewObject(c.X(), c.Y(), c.Z())
+				t = NewObject(c1.X(), c1.Y(), c1.Z())
 			}
 			return b.force.Apply(f, t)
 		}
@@ -77,9 +83,30 @@ func (b *BarneHut) calcForce(oc *octree.Octree, from, to octree.Octant) *ForceVe
 			if l == nil {
 				continue
 			}
-			f := b.calcForce(oc, from, leaf)
+			if from == l {
+				continue
+			}
+			f := b.calcForce(oc, from, l)
 			ret.Add(f)
 		}
 	}
 	return ret
+}
+
+// boundingBox calculates the bounding box that fits all the points.
+func boundingBox(objects map[string]*Object) *octree.Box {
+	var (
+		minX, maxX float64
+		minY, maxY float64
+		minZ, maxZ float64
+	)
+	for i := range objects {
+		minX = math.Min(minX, objects[i].X())
+		maxX = math.Max(maxX, objects[i].X())
+		minY = math.Min(minY, objects[i].Y())
+		maxY = math.Max(maxY, objects[i].Y())
+		minZ = math.Min(minZ, objects[i].Z())
+		maxZ = math.Max(maxZ, objects[i].Z())
+	}
+	return octree.NewBox(minX, maxX, minY, maxY, minZ, maxZ)
 }
