@@ -48,6 +48,7 @@ func (l *Leaf) Insert(p Point, box *Box) Octant {
 	n.massCenter = massCenter(l.Center(), p)
 	n.Insert(l.Center(), box)
 	n.Insert(p, box)
+	n.updateMassCenter()
 
 	return n
 }

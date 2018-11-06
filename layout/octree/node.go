@@ -44,6 +44,7 @@ func (n *Node) Insert(p Point, parentBox *Box) Octant {
 	}
 
 	n.Leafs[idx] = l
+	n.updateMassCenter()
 	return n
 }
 
@@ -52,6 +53,9 @@ func (n *Node) Insert(p Point, parentBox *Box) Octant {
 func (n *Node) updateMassCenter() {
 	var points []Point
 	for i := range n.Leafs {
+		if n.Leafs[i] == nil {
+			continue
+		}
 		points = append(points, n.Leafs[i].Center())
 	}
 
