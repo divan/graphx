@@ -95,9 +95,9 @@ func (o *Object) updateVelocity(dt int, force *ForceVector) {
 		return
 	}
 
-	o.velocity.X += float64(dt) * force.DX / float64(o.Mass())
-	o.velocity.Y += float64(dt) * force.DY / float64(o.Mass())
-	o.velocity.Z += float64(dt) * force.DZ / float64(o.Mass())
+	o.velocity.X += float64(dt) * force.DX / o.Mass()
+	o.velocity.Y += float64(dt) * force.DY / o.Mass()
+	o.velocity.Z += float64(dt) * force.DZ / o.Mass()
 }
 
 func (o Object) Force() *ForceVector {
