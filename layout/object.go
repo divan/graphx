@@ -33,6 +33,18 @@ func NewObject(x, y, z float64) *Object {
 	}
 }
 
+func NewObjectMass(x, y, z, mass float64) *Object {
+	return &Object{
+		_X:    x,
+		_Y:    y,
+		_Z:    z,
+		_Mass: mass,
+
+		velocity: ZeroVelocity(),
+		force:    ZeroForce(),
+	}
+}
+
 // NewObjectID creates new object with given coordinates and ID.
 func NewObjectID(x, y, z float64, id string) *Object {
 	ret := NewObject(x, y, z)
