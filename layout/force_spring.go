@@ -18,7 +18,7 @@ func NewSpringForce(stiffness, length float64, rule ForceRule) Force {
 }
 
 // Apply calculates the spring force between two nodes. Satisfies Force interface.
-func (s *SpringForce) Apply(from, to *Object) *ForceVector {
+func (s *SpringForce) Apply(from, to Point) *ForceVector {
 	actualLength := distance(from, to)
 	if actualLength < 1 {
 		actualLength = s.Length / 2

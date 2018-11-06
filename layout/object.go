@@ -3,8 +3,6 @@ package layout
 import (
 	"fmt"
 	"math"
-
-	"github.com/divan/graphx/layout/octree"
 )
 
 // Object represents an object in 3D space with some ID information
@@ -105,12 +103,13 @@ func (o *Object) updateVelocity(dt int, force *ForceVector) {
 func (o Object) Force() *ForceVector {
 	return o.force
 }
+
 func (o Object) Velocity() *Velocity {
 	return o.velocity
 }
 
 // distance calculated distance betweein two objects in 3D space.
-func distance(from, to octree.Point) float64 {
+func distance(from, to Point) float64 {
 	dx := to.X() - from.X()
 	dy := to.Y() - from.Y()
 	dz := to.Z() - from.Z()

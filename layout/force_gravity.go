@@ -21,7 +21,7 @@ func NewGravityForce(coeff float64, rule ForceRule) Force {
 }
 
 // Apply calculates the gravity force between two nodes. Satisfies Force interface.
-func (g *GravityForce) Apply(from, to *Object) *ForceVector {
+func (g *GravityForce) Apply(from, to Point) *ForceVector {
 	xx := float64(to.X() - from.X())
 	yy := float64(to.Y() - from.Y())
 	zz := float64(to.Z() - from.Z())

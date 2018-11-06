@@ -18,11 +18,15 @@ func NewDragForce(coeff float64, rule ForceRule) Force {
 // Second parameter is ignored. Satisfies Force interface.
 // TODO(divan): find how to generalize force better, as here
 // we don't need two nodes.
-func (g *DragForce) Apply(o, _ *Object) *ForceVector {
+func (g *DragForce) Apply(p, _ Point) *ForceVector {
+	pv, ok := p.(HasVelocity)
+	if !ok {
+		return ZeroForce()
+	}
 	return &ForceVector{
-		DX: -g.Coeff * o.velocity.X,
-		DY: -g.Coeff * o.velocity.Y,
-		DZ: -g.Coeff * o.velocity.Z,
+		DX: -g.Coeff * pv.Velocity().X,
+		DY: -g.Coeff * pv.Velocity().Y,
+		DZ: -g.Coeff * pv.Velocity().Z,
 	}
 }
 

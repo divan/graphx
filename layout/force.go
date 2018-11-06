@@ -12,7 +12,7 @@ type ForceVector struct {
 // Force defines the methods for physical force.
 type Force interface {
 	Name() string
-	Apply(from, to *Object) *ForceVector
+	Apply(from, to Point) *ForceVector
 	Rule() ForceRule
 }
 

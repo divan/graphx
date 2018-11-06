@@ -56,7 +56,7 @@ func (b *BarneHut) calcForce(oc *octree.Octree, from, to octree.Octant) *ForceVe
 		if leaf == nil {
 			return ret
 		}
-		return b.force.Apply(from.Center().(*Object), to.Center().(*Object))
+		return b.force.Apply(from.Center(), to.Center())
 	} else if node, ok := to.(*octree.Node); ok {
 		// calculate ratio
 		width := node.Width()
@@ -64,19 +64,7 @@ func (b *BarneHut) calcForce(oc *octree.Octree, from, to octree.Octant) *ForceVe
 		r := distance(from.Center(), to.Center())
 
 		if width/r < b.theta {
-			// FIXME. TODO(divan): this is temporary hack to verify tests.
-			// Refactor point/object represtnations here and in octree and/or refactor forces
-			c := from.Center()
-			f, ok := c.(*Object)
-			if !ok {
-				f = NewObjectMass(c.X(), c.Y(), c.Z(), c.Mass())
-			}
-			c1 := to.Center()
-			t, ok := c1.(*Object)
-			if !ok {
-				t = NewObjectMass(c1.X(), c1.Y(), c1.Z(), c1.Mass())
-			}
-			return b.force.Apply(f, t)
+			return b.force.Apply(from.Center(), to.Center())
 		}
 
 		for _, l := range node.Leafs {
