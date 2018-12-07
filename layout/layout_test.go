@@ -41,8 +41,8 @@ func TestLayoutAdd(t *testing.T) {
 	if len(l.objects) != 2 {
 		t.Fatalf("objects map expected to be of %d length, but is of %d", 2, len(l.objects))
 	}
-	if len(l.positions) != 2 {
-		t.Fatalf("positions expected to be of %d length, but is of %d", 2, len(l.objects))
+	if len(l.keys) != 2 {
+		t.Fatalf("keys expected to be of %d length, but is of %d", 2, len(l.objects))
 	}
 	if len(l.links) != 1 {
 		t.Fatalf("expected to have %d links, but has %d", 1, len(l.links))
@@ -52,8 +52,8 @@ func TestLayoutAdd(t *testing.T) {
 	if len(l.objects) != 3 {
 		t.Fatalf("objects map expected to be of %d length, but is of %d", 3, len(l.objects))
 	}
-	if len(l.positions) != 3 {
-		t.Fatalf("positions expected to be of %d length, but is of %d", 3, len(l.objects))
+	if len(l.keys) != 3 {
+		t.Fatalf("keys expected to be of %d length, but is of %d", 3, len(l.objects))
 	}
 }
 

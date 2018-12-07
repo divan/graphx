@@ -19,9 +19,9 @@ const stableThreshold = 2.001
 type Layout struct {
 	g *graph.Graph
 
-	objects   map[string]*Object // node ID as a key
-	positions []*Position
-	links     []*graph.Link
+	objects map[string]*Object // node ID as a key
+	keys    []string           // IDs in the order of adding
+	links   []*graph.Link
 
 	confMu sync.RWMutex
 	config Config
@@ -45,11 +45,11 @@ func New(g *graph.Graph, config Config) *Layout {
 // NewWithForces initializes layout with data and custom set of forces.
 func NewWithForces(g *graph.Graph, forces ...Force) *Layout {
 	l := &Layout{
-		g:         g,
-		objects:   make(map[string]*Object),
-		positions: make([]*Position, 0, len(g.Nodes())),
-		links:     g.Links(),
-		forces:    forces,
+		g:       g,
+		objects: make(map[string]*Object),
+		keys:    make([]string, 0, len(g.Nodes())),
+		links:   g.Links(),
+		forces:  forces,
 	}
 
 	l.initPositions()
@@ -80,16 +80,15 @@ func (l *Layout) AddNode(node graph.Node) error {
 // TODO: add link/remove link
 
 func (l *Layout) addObject(node graph.Node) {
-	lastIdx := len(l.positions) // use last item index for calculating pseudo-random positions
+	lastIdx := len(l.keys) // use last item index for calculating pseudo-random positions
 
 	// TODO: handle weight
 
 	x, y, z := randomPosition(lastIdx)
-	pos := &Position{x, y, z}
 	object := NewObjectID(x, y, z, node.ID())
 
-	l.positions = append(l.positions, pos)
 	l.objects[node.ID()] = object
+	l.keys = append(l.keys, node.ID())
 }
 
 // randomPosition generates x,y,z coordinates pseudo-randomly spread around the
@@ -175,7 +174,13 @@ func (l *Layout) Positions() map[string]*Object {
 // Positions returns nodes information as a slice, where index order is equal to the
 // original graph nodes order.
 func (l *Layout) PositionsSlice() []*Position {
-	return l.positions
+	ret := make([]*Position, len(l.keys))
+	for i, id := range l.keys {
+		obj := l.objects[id]
+		pos := &Position{obj._X, obj._Y, obj._Z}
+		ret[i] = pos
+	}
+	return ret
 }
 
 // Links returns graph data links.
@@ -202,13 +207,11 @@ func (l *Layout) SetConfig(c Config) {
 // to be in sync with new positions.
 // Positions slice should be the same size and order as Nodes.
 func (l *Layout) SetPositions(positions []*Position) {
-	l.positions = positions
-
 	// recalculate objects with new positions
 	//l.resetObjects()
 	for i, node := range l.g.Nodes() {
 		id := node.ID()
-		pos := l.positions[i]
+		pos := positions[i]
 		obj := l.objects[id]
 		obj.SetPosition(pos.X, pos.Y, pos.Z)
 	}
