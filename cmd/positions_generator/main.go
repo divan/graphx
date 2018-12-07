@@ -42,12 +42,10 @@ func main() {
 
 	if *verbose {
 		for i := 0; i < *n; i++ {
-			for _, point := range l.PositionsSlice() {
-				fmt.Printf("%s ", point)
-			}
-			fmt.Println()
+			fmt.Print(".")
 			l.UpdatePositions()
 		}
+		fmt.Println()
 	} else {
 		l.CalculateN(*n)
 	}
