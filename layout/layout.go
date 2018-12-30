@@ -220,3 +220,8 @@ func (l *Layout) SetPositions(positions []*Position) {
 func (l *Layout) resetObjects() {
 	l.objects = make(map[string]*Object)
 }
+
+// Graph returns original data graph for layout.
+func (l *Layout) Graph() *graph.Graph {
+	return l.g
+}

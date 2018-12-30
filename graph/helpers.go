@@ -53,6 +53,7 @@ func (g *Graph) LinkByIndices(from, to int) (int, error) {
 }
 
 // NodeByID returns node index by its ID.
+// TODO(divan): rename to NodeIdxByID
 func (g *Graph) NodeByID(id string) (int, error) {
 	idx, ok := g.nodeIdxByID[id]
 	if !ok {
@@ -75,4 +76,13 @@ func (g *Graph) NodeIDByIdx(idx int) (string, error) {
 	}
 
 	return g.nodes[idx].ID(), nil
+}
+
+// Node returns Node by its string ID. It uses cache for faster lookup.
+func (g *Graph) Node(id string) (Node, error) {
+	idx, err := g.NodeByID(id)
+	if err != nil {
+		return nil, err
+	}
+	return g.nodes[idx], nil
 }
